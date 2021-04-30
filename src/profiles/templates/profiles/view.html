@@ -6,6 +6,17 @@
 </head>
 <body>
 {{profile}}
+<br>
+<p><b>My posts: </b>{{ profile.get_my_posts }}</p>
+<p><b>My posts number: </b>{{ profile.num_posts }}</p>
+<p><b>Following profiles: </b>{{ profile.get_following }}</p>
+<p><b>Following profiles list: </b>{{ profile.get_following_users }}</p>
+<p><b>My posts and posts of following users: </b>{{ profile.get_my_and_following_posts }}</p>
+<p><b>Proposals for following: </b>{{ profile.get_proposals_for_following }}</p>
+<p><b>Number of people that i follow: </b>{{ profile.following_count }}</p>
+<p><b>Profiles that follow me: </b>{{ profile.get_followers }}</p>
+<p><b>Number of profiles follow me: </b>{{ profile.followers_count }}</p>
+
 
 </body>
 </html>
