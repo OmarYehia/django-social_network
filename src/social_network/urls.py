@@ -21,10 +21,11 @@ from .views import index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', index, name='index')
+    path('', index, name='index'),
     path('', include("django.contrib.auth.urls")),
     path('', include("accounts.urls")),
-    path('profiles/', include('profiles.urls'))
+    path('profiles/', include('profiles.urls')),
+    path('posts/', include('posts.urls', namespace='posts'))
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

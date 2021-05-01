@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
+    'posts'
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -78,8 +79,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'social_network',
-        'USER': 'root',
-        'PASSWORD': 'P@ssw0rd',
+        'USER': 'djangouser',
+        'PASSWORD': 'Qwer1234*',
         'HOST': 'localhost'
     }
 }
