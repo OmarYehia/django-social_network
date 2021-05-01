@@ -2,7 +2,6 @@ from django.contrib import admin
 from .models import Profile
 
 # Register your models here.
-<<<<<<< HEAD
 
 
 class ProfileAdmin(admin.ModelAdmin):
@@ -11,6 +10,3 @@ class ProfileAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Profile, ProfileAdmin)
-=======
-admin.site.register(Profile)
->>>>>>> ccf6936d24cac371e5c6c81931f5f24a2fe8a71c
