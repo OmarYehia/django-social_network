@@ -1,0 +1,17 @@
+.posts-list .card .created-text,
+.create-post-form .form-label,
+.create-post-form input[type=file] {
+    font-size:13px;
+     color:#333;
+}
+
+.errorlist {
+    text-decoration: none;
+    list-style: none;
+    margin: 0;
+    padding: 5px;
+}
+
+.btn {
+    font-size: 14px;
+}
