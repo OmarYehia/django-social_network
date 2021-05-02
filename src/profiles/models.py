@@ -26,11 +26,7 @@ class Profile(models.Model):
     slug = models.SlugField(unique=True, blank=True, null=True)
 
     def __str__(self):
-<<<<<<< HEAD
-        return f'{self.user.username}'
-=======
         return f'{self.user.first_name} {self.user.last_name}'
->>>>>>> 22c56bafe5622e1d04e9e54ff209573b8730bb29
 
     @property
     def get_total_posts(self):
