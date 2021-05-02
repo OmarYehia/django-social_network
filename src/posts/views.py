@@ -2,16 +2,24 @@ from django.shortcuts import render, redirect
 from .models import Post, Like
 from profiles.models import Profile
 from .forms import PostForm, CommentForm
+from django.db.models import Q
 # Create your views here.
 
 
 def posts_index(request):
     user = request.user
     profile = Profile.objects.get(user=user)
+    friend_profiles = []
+    friends = profile.following.all()
+    for friend in friends:
+        friend_profile = Profile.objects.get(user=friend)
+        friend_profiles.append(friend_profile)
 
-    posts = Post.objects.filter(author=profile)  # Gets own posts
+    posts = Post.objects.filter(Q(author=profile) | Q(
+        author__in=friend_profiles))  # Gets own posts
     # Need to get friends posts
     # get groups posts
+    print(posts)
 
     post_form = PostForm()
     comment_form = CommentForm()
