@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Profile
 from django.contrib.auth.models import User
 from .forms import ProfileModelForm
@@ -29,14 +29,20 @@ def my_profile_view(request, username):
 
 
 class ProfileUpdateView(UpdateView):
+
     model = Profile
     form_class = ProfileModelForm
     template_name = 'profiles/update.html'
-    success_url = reverse_lazy('profiles:my-profile-view')
+    success_url = reverse_lazy('posts:posts-index')
 
     def form_valid(self, form):
         profile = Profile.objects.get(user=self.request.user)
-        if form.instance.user == profile:
+        user = User.objects.get(username=self.request.user)
+        if form.instance.user == profile.user:
+            user.first_name = form.instance.first_name
+            user.last_name = form.instance.last_name
+            user.email = form.instance.email
+            user.save()
             return super().form_valid(form)
         else:
             form.add_error(None, 'You can update only your own profile.')
