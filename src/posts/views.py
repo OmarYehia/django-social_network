@@ -34,6 +34,7 @@ def posts_index(request):
             post_instance.author = profile
             post_instance.save()
             post_added = True
+            return redirect('posts:posts-index')
 
     elif 'submit_comment_form' in request.POST:
         comment_form = CommentForm(request.POST)
@@ -43,6 +44,7 @@ def posts_index(request):
             comment_instance.user = profile
             comment_instance.post = Post.objects.get(id=post_id)
             comment_instance.save()
+            return redirect('posts:posts-index')
 
     context = {
         'posts': posts,
