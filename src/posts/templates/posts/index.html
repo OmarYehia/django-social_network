@@ -50,7 +50,7 @@
                     <!-- Comment List -->
                     <h4><i class="fas fa-comment-dots"></i> Comments</h4>
                     <button onclick="toggleComment(this)" class="btn btn-outline-dark mb-2 show-comments" id="show-comments-{{ post.id }}">Show Comments</button>
-                    <div class="comment-list mt-3 border-top py-3 hide">
+                    <div class="comment-list mt-3 border-top py-3 not-visible">
                         {% for comment in post.comments.all %}
                             <div class="card mb-2">
                                 <div class="card-body">

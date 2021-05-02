@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import posts_index, like_unlike_post
 
+
 app_name = 'posts'
 
 urlpatterns = [

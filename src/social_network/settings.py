@@ -80,8 +80,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'social_network',
-        'USER': 'djangouser',
-        'PASSWORD': 'Qwer1234*',
+        'USER': 'root',
+        'PASSWORD': 'P@ssw0rd',
         'HOST': 'localhost'
     }
 }
@@ -126,6 +126,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
     # Add static folders here
     # eg: BASE_DIR / 'posts' / 'static',
+    BASE_DIR / 'profiles' / 'static',
 ]
 
 # Default primary key field type
