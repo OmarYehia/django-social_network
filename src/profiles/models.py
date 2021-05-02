@@ -5,11 +5,15 @@ import random
 
 
 # Create your models here.
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to='avatars', default='avatar.png')
-    background = models.ImageField(upload_to='background', default='background.png')
-    following = models.ManyToManyField(User, related_name='following', blank=True)
+    background = models.ImageField(
+        upload_to='background', default='background.png')
+    following = models.ManyToManyField(
+        User, related_name='following', blank=True)
     bio = models.TextField(default="no bio..")
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -17,12 +21,30 @@ class Profile(models.Model):
     def __str__(self):
         return str(self.user)
 
-    def get_my_posts(self):
+    @property
+    def get_total_posts(self):
+        return self.posts.all().count()
+
+    @property
+    def get_all_author_posts(self):
         return self.posts.all()
 
     @property
-    def num_posts(self):
-        return self.posts.all().count()
+    def get_total_likes_given_number(self):
+        likes = self.like_set.all()
+        total = 0
+        for i in likes:
+            if i.value == "Like":
+                total += 1
+        return total
+
+    @property
+    def get_total_likes_recieved_number(self):
+        posts = self.posts.all()
+        total = 0
+        for i in posts:
+            total += i.get_total_likes
+        return total
 
     def get_following(self):
         return self.following.all()
@@ -42,13 +64,15 @@ class Profile(models.Model):
         my_posts = self.posts.all()
         posts.append(my_posts)
         if len(posts) > 0:
-            qs = sorted(chain(*posts), reverse=True, key=lambda obj: obj.created)
+            qs = sorted(chain(*posts), reverse=True,
+                        key=lambda obj: obj.created)
         return qs
 
     def get_proposals_for_following(self):
         profiles = Profile.objects.all().exclude(user=self.user)
         followers_list = [profile for profile in self.get_following()]
-        available = [profile.user for profile in profiles if profile.user not in followers_list]
+        available = [
+            profile.user for profile in profiles if profile.user not in followers_list]
         random.shuffle(available)
         return available[:3]
 

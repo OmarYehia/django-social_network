@@ -1,7 +1,10 @@
 from django.urls import path
-from . import views
+from .views import posts_index, like_unlike_post
+
+
+app_name = 'posts'
 
 urlpatterns = [
-    path('posts-view', views.posts_view, name="posts-view"),
-
+    path('', posts_index, name='posts-index'),
+    path('like/', like_unlike_post, name="like-unlike")
 ]

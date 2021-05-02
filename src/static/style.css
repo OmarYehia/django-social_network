@@ -1,0 +1,22 @@
+.posts-list .card .created-text,
+.create-post-form .form-label,
+.create-post-form input,
+.create-comment-form input {
+    font-size:13px;
+     color:#333;
+}
+
+.errorlist {
+    text-decoration: none;
+    list-style: none;
+    margin: 0;
+    padding: 5px;
+}
+
+.btn,
+.error-field,
+.success-field,
+.stat-field,
+.comment-body{
+    font-size: 14px;
+}
