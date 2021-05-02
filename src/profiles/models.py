@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 from itertools import chain
 import random
 
-
 # Create your models here.
+GENDER_CHOICES = (('M', 'Male'), ('F', 'Female'))
 
 
 class Profile(models.Model):
@@ -15,11 +15,16 @@ class Profile(models.Model):
     following = models.ManyToManyField(
         User, related_name='following', blank=True)
     bio = models.TextField(default="no bio..")
+    email = models.EmailField(null=True)
+    first_name = models.CharField(max_length=100, null=True)
+    last_name = models.CharField(max_length=100, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, editable=False, null=True)
+    date_of_birth = models.DateField(null=True, editable=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.user)
+        return f'{self.user.username} Profile'
 
     @property
     def get_total_posts(self):

@@ -22,7 +22,7 @@ class NewUserForm(UserCreationForm):
             user = super(NewUserForm, self).save(commit=False)
             user.email = self.cleaned_data['email']
             user.first_name = self.cleaned_data['first_name']
-            user.last_name_name = self.cleaned_data['last_name']
+            user.last_name = self.cleaned_data['last_name']
             user.gender = self.cleaned_data['gender']
             user.date_of_birth = self.cleaned_data['date_of_birth']
             if commit:
