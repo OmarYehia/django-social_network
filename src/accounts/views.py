@@ -1,7 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import UserCreationForm
-from .forms import NewUserForm
+from src.profiles.forms import NewUserForm
 #from django.contrib import messages
 #from django.contrib.auth.forms import AuthenticationForm #add this
 
