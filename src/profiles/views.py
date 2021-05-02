@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Profile
 from django.contrib.auth.models import User
+from .forms import ProfileModelForm
 from django.views.generic import TemplateView, View
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required, permission_required
@@ -10,8 +11,18 @@ from django.contrib.auth.decorators import login_required, permission_required
 def my_profile_view(request, username):
     user = User.objects.get(username=username)
     profile = Profile.objects.get(user=user)
+    form = ProfileModelForm(request.POST or None, request.FILES or None, instance=profile)
+    confirm = False
+
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            confirm = True
+
     context = {
         'profile': profile,
+        'form': form,
+        'confirm': confirm
     }
     return render(request, 'profiles/myprofile.html', context)
 

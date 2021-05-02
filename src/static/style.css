@@ -5,6 +5,13 @@
     font-size:13px;
      color:#333;
 }
+.updated-profile-form{
+  font-weight: 200;
+  line-height: 4
+}
+.updated-profile-form input, .updated-profile-form textarea {
+  font-weight: 200;
+}
 
 .errorlist {
     text-decoration: none;

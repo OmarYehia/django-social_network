@@ -13,7 +13,7 @@ def posts_index(request):
     user = request.user
     profile = Profile.objects.get(user=user)
     friend_profiles = []
-    friends = profile.following.all()
+    friends = profile.friends.all()
     for friend in friends:
         friend_profile = Profile.objects.get(user=friend)
         friend_profiles.append(friend_profile)
