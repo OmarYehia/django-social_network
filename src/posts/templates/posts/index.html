@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load profanity %}
 {% block title %}Posts{% endblock title %}
 
 {% block content %}
@@ -48,11 +48,9 @@
                         </form>
                     </div>
                     <!-- Comment List -->
-                    <div class="comment-list mt-3 border-top py-3">
-                        <div class="">
-                            <h4><i class="fas fa-comment-dots"></i> Comments</h4>
-                            <a href="#" class="btn btn-outline-dark mb-2">Show Comments</a>
-                        </div>
+                    <h4><i class="fas fa-comment-dots"></i> Comments</h4>
+                    <button onclick="toggleComment(this)" class="btn btn-outline-dark mb-2 show-comments" id="show-comments-{{ post.id }}">Show Comments</button>
+                    <div class="comment-list mt-3 border-top py-3 not-visible">
                         {% for comment in post.comments.all %}
                             <div class="card mb-2">
                                 <div class="card-body">
@@ -60,7 +58,8 @@
                                         <img style="width: 32px; height: 32px;" src="/media/{{ comment.user.avatar }}" class="rounded-circle">
                                         <p class=" card-text p-2 text-black-50 created-text" >{{ comment.user }} - {{ comment.created_at|timesince }} ago</p>
                                     </div>
-                                    <p class="card-text ms-2 comment-body">{{ comment.body }}</p>                                </div>
+                                    <p class="card-text ms-2 comment-body">{{ comment.body }}</p>
+                                </div>
                             </div>
                         {% endfor %}
                     </div>
