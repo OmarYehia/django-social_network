@@ -5,6 +5,7 @@
 {% block content %}
 <div class="main-section">
     <div class="row">
+        <!-- Post List -->
         <div class="posts-list col-7">
             {% for post in posts %}
             <div class="card w-100 mb-3">
@@ -32,8 +33,23 @@
                                 <span>&nbsp;{{ post.get_total_likes }}</span>
                         </form>
                     </div>
-                    <div class="comment-form border-top mt-5">
-
+                    <!-- Comment List -->
+                    <div class="comment-list mt-3">
+                        <h4>Comments</h4>
+                        {% if post.comments.all.count == 0 %}
+                        <p>No comments for this post. Add a comment below.</p>
+                        {% endif %}
+                        {% for comment in post.comments.all %}
+                            <div class="card mb-2">
+                                <div class="card-body">
+                                    <p class="card-text">{{ comment.body }}</p>
+                                    <p class="card-text p-2 text-black-50 created-text float-right" >Commented at: {{ comment.created_at }} - by: {{ comment.user }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <!-- Comment Form -->
+                    <div class="comment-form border-top mt-3">
                         {{ comment_form.non_field_errors }}
                         <form class="create-comment-form p-2" action="" method="POST">
                             {% csrf_token %}
@@ -43,9 +59,7 @@
                                 <div class="text-danger p-1 error-field">
                                 {{ comment_form.body.errors }}
                                 </div>
-                                
                             </div>
-                           
                             <button type="submit" class="btn btn-outline-dark py-1 px-4" name="submit_comment_form">
                                 Comment&nbsp;
                                 <i class="far fa-comment-dots"></i>
@@ -56,7 +70,8 @@
             </div>
             {% endfor %}
         </div>
-            <div class="col-5">
+        <!-- Post Form -->
+        <div class="col-5">
             {{ post_form.non_field_errors }}
                 {% if post_added %}
                 <div class="alert alert-success success-field">
