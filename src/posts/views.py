@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Post, Like
+from .models import Post, Like, Comment
 from profiles.models import Profile
 from .forms import PostForm, CommentForm
 from django.db.models import Q
@@ -34,6 +34,7 @@ def posts_index(request):
             post_instance.author = profile
             post_instance.save()
             post_added = True
+            return redirect('posts:posts-index')
 
     elif 'submit_comment_form' in request.POST:
         comment_form = CommentForm(request.POST)
@@ -43,6 +44,7 @@ def posts_index(request):
             comment_instance.user = profile
             comment_instance.post = Post.objects.get(id=post_id)
             comment_instance.save()
+            return redirect('posts:posts-index')
 
     context = {
         'posts': posts,
@@ -113,3 +115,12 @@ class PostUpdateView(UpdateView):
         else:
             form.add_error(None, 'You can update only your own posts.')
             return super().form_invalid(form)
+
+
+def CommentDelete(request, pk):
+    comment = Comment.objects.get(pk=pk)
+    logged_user_profile = Profile.objects.get(user=request.user)
+    if comment.user == logged_user_profile:
+        comment.delete()
+
+    return redirect('posts:posts-index')

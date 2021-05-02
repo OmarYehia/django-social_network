@@ -57,6 +57,9 @@
                                     <div class="d-flex mb-2 border-bottom">
                                         <img style="width: 32px; height: 32px;" src="/media/{{ comment.user.avatar }}" class="rounded-circle">
                                         <p class=" card-text p-2 text-black-50 created-text" >{{ comment.user }} - {{ comment.created_at|timesince }} ago</p>
+                                        {% if comment.user == profile %}
+                                        <a href="{% url 'posts:comment-delete' comment.id %}" class="btn text-danger ms-auto border-0">Delete <i class="fas fa-times-circle"></i></a>
+                                        {% endif %}
                                     </div>
                                     <p class="card-text ms-2 comment-body">{{ comment.body }}</p>
                                 </div>
@@ -86,20 +89,21 @@
             {% endfor %}
         </div>
         <!-- Post Form -->
-        <div class="col-5">
-            {{ post_form.non_field_errors }}
+        <div class="col-5 ">
+            <div class="sticky-top">
+                {{ post_form.non_field_errors }}
                 {% if post_added %}
                 <div class="alert alert-success success-field">
                     <span>Post added successfully!</span>
                 </div>
                 {% endif %}
-                <form class="create-post-form border rounded p-3" action="" method="POST" enctype="multipart/form-data">
+                <form class="create-post-form border rounded p-3 sticky-top" action="" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="{{ post_form.content.id_for_label }}" class="form-label">Post Content:</label>
                         <textarea class="form-control" name="content"></textarea>
                         <div class="text-danger p-1 error-field">
-                           {{ post_form.content.errors }}
+                        {{ post_form.content.errors }}
                         </div>
                         
                     </div>
@@ -108,13 +112,14 @@
                         <label for="{{ post_form.image.id_for_label }}" class="form-label">Post image:</label>
                         <input type="file" class="form-control" name="image" />
                         <div class="text-danger p-1 error-field">
-                           {{ post_form.image.errors }}
+                        {{ post_form.image.errors }}
                         </div>
                     </div>
                     <button type="submit" class="btn btn-success" name="submit_post_form">Add Post</button>
                 </form>  
             </div>
         </div>
-
     </div>
+
+</div>
 {% endblock content %}

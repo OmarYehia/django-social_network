@@ -18,14 +18,19 @@ class Profile(models.Model):
     email = models.EmailField(null=True)
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, editable=False, null=True)
+    gender = models.CharField(
+        max_length=1, choices=GENDER_CHOICES, editable=False, null=True)
     date_of_birth = models.DateField(null=True, editable=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(unique=True, blank=True, null=True)
 
     def __str__(self):
+<<<<<<< HEAD
         return f'{self.user.username}'
+=======
+        return f'{self.user.first_name} {self.user.last_name}'
+>>>>>>> 22c56bafe5622e1d04e9e54ff209573b8730bb29
 
     @property
     def get_total_posts(self):
@@ -94,8 +99,10 @@ STATUS_CHOICES = (
 
 
 class Relationship(models.Model):
-    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='sender')
-    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='receiver')
+    sender = models.ForeignKey(
+        Profile, on_delete=models.CASCADE, related_name='sender')
+    receiver = models.ForeignKey(
+        Profile, on_delete=models.CASCADE, related_name='receiver')
     status = models.CharField(max_length=8, choices=STATUS_CHOICES)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
