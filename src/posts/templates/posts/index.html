@@ -9,15 +9,29 @@
         <div class="posts-list col-7">
             {% for post in posts %}
             <div class="card w-100 mb-3">
-            <p class="card-text p-2 text-black-50 created-text" >Created: {{ post.created_at }} - by: {{ post.author }}</p>
+            <div class="post-info p-3 d-flex justify-content-between">
+                <div class="d-flex">
+                    <img style="width: 40px; height: 40px;" src="/media/{{ post.author.avatar }}" class="rounded-circle">
+                    <p class=" card-text p-2 text-black-50 created-text" >{{ post.author }} - {{ post.created_at|timesince }} ago</p>
+                </div>
+                <div>
+                    {% if post.author == profile %}
+                        <a href="#" class="btn btn-outline-dark">Update</a>
+                        <a href="#" class="btn btn-outline-dark">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
                 {% if post.image %}
                 <div style="max-height: 300px;">
-                    <img style="width: 100%; height: fit-content; object-fit: cover;" src="/media/{{ post.image }}" class="card-img-top">
+                    <img style="width: 100%; height: 300px; object-fit: cover;" src="/media/{{ post.image }}" class="card-img-top">
                 </div>
                 {% endif %}
                 <div class="card-body">
                     <p class="card-text">{{ post.content }}</p>
-                    <div class="like-form">
+                    <div class="like-form d-flex justify-content-between align-items-center">
+                        <div class="stat-field">
+                            <span>{{ post.get_total_likes }} Likes - {{ post.comments.all.count }} comments</span>
+                        </div>
                         <form action="{% url 'posts:like-unlike' %}" method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="post_id" value="{{ post.id }}">
@@ -30,21 +44,23 @@
                                 {% if profile == post.author %}disabled{% endif %}
                                 ><i class="fas fa-thumbs-up"></i>&nbsp;Like</button>
                             {% endif %}
-                                <span>&nbsp;{{ post.get_total_likes }}</span>
+                                
                         </form>
                     </div>
                     <!-- Comment List -->
-                    <div class="comment-list mt-3">
-                        <h4>Comments</h4>
-                        {% if post.comments.all.count == 0 %}
-                        <p>No comments for this post. Add a comment below.</p>
-                        {% endif %}
+                    <div class="comment-list mt-3 border-top py-3">
+                        <div class="">
+                            <h4><i class="fas fa-comment-dots"></i> Comments</h4>
+                            <a href="#" class="btn btn-outline-dark mb-2">Show Comments</a>
+                        </div>
                         {% for comment in post.comments.all %}
                             <div class="card mb-2">
                                 <div class="card-body">
-                                    <p class="card-text">{{ comment.body }}</p>
-                                    <p class="card-text p-2 text-black-50 created-text float-right" >Commented at: {{ comment.created_at }} - by: {{ comment.user }}</p>
-                                </div>
+                                    <div class="d-flex mb-2 border-bottom">
+                                        <img style="width: 32px; height: 32px;" src="/media/{{ comment.user.avatar }}" class="rounded-circle">
+                                        <p class=" card-text p-2 text-black-50 created-text" >{{ comment.user }} - {{ comment.created_at|timesince }} ago</p>
+                                    </div>
+                                    <p class="card-text ms-2 comment-body">{{ comment.body }}</p>                                </div>
                             </div>
                         {% endfor %}
                     </div>

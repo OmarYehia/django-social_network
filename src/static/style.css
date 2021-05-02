@@ -15,6 +15,8 @@
 
 .btn,
 .error-field,
-.success-field {
+.success-field,
+.stat-field,
+.comment-body{
     font-size: 14px;
 }
