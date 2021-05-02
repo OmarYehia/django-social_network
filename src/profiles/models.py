@@ -35,7 +35,7 @@ class Profile(models.Model):
         users = [user for user in self.get_following()]
         posts = []
         qs = None
-        for u in  users:
+        for u in users:
             profile = Profile.objects.get(user=u)
             profile_posts = profile.posts.all()
             posts.append(profile_posts)
@@ -66,4 +66,4 @@ class Profile(models.Model):
 
     @property
     def followers_count(self):
-         return len(self.get_followers())
+        return len(self.get_followers())

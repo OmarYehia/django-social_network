@@ -125,6 +125,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
     # Add static folders here
     # eg: BASE_DIR / 'posts' / 'static',
+    BASE_DIR / 'profiles' / 'static',
 ]
 
 # Default primary key field type
