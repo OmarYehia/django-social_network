@@ -17,18 +17,40 @@
                 <div class="card-body">
                     <p class="card-text">{{ post.content }}</p>
                     <div class="like-form">
-                    <form action="{% url 'posts:like-unlike' %}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="post_id" value="{{ post.id }}">
-                        {% if profile in post.likes.all %}
-                            <button type="submit" class="btn btn-dark py-1 px-4"><i class="fas fa-thumbs-down"></i>&nbsp;Unlike</button>
-                        {% else %}
-                            <button type="submit" class="btn btn-outline-dark py-1 px-4"
-                            {% if profile == post.author %}disabled{% endif %}
-                            ><i class="fas fa-thumbs-up"></i>&nbsp;Like</button>
-                        {% endif %}
-                            <span>&nbsp;{{ post.get_total_likes }}</span>
-                    </form>
+                        <form action="{% url 'posts:like-unlike' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+                            {% if profile in post.likes.all %}
+                                <button type="submit" class="btn btn-dark py-1 px-4" name="submit_comment_form">
+                                    <i class="fas fa-thumbs-down"></i>&nbsp;Unlike
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-outline-dark py-1 px-4" name="submit_comment_form"
+                                {% if profile == post.author %}disabled{% endif %}
+                                ><i class="fas fa-thumbs-up"></i>&nbsp;Like</button>
+                            {% endif %}
+                                <span>&nbsp;{{ post.get_total_likes }}</span>
+                        </form>
+                    </div>
+                    <div class="comment-form border-top mt-5">
+
+                        {{ comment_form.non_field_errors }}
+                        <form class="create-comment-form p-2" action="" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="post_id" value={{ post.id }} />
+                            <div class="mb-3">
+                                <textarea class="form-control" name="body" required placeholder="Add a comment..." maxlength="500"></textarea>
+                                <div class="text-danger p-1 error-field">
+                                {{ comment_form.body.errors }}
+                                </div>
+                                
+                            </div>
+                           
+                            <button type="submit" class="btn btn-outline-dark py-1 px-4" name="submit_comment_form">
+                                Comment&nbsp;
+                                <i class="far fa-comment-dots"></i>
+                            </button>
+                        </form>  
                     </div>
                 </div>
             </div>
@@ -36,23 +58,30 @@
         </div>
             <div class="col-5">
             {{ post_form.non_field_errors }}
+                {% if post_added %}
+                <div class="alert alert-success success-field">
+                    <span>Post added successfully!</span>
+                </div>
+                {% endif %}
                 <form class="create-post-form border rounded p-3" action="" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="{{ form.content.id_for_label }}" class="form-label">Post Content:</label>
-                        <textarea class="form-control" name="content">{{ form.content }}</textarea>
-                            
-                        <div class="text-danger p-1">
+                        <label for="{{ post_form.content.id_for_label }}" class="form-label">Post Content:</label>
+                        <textarea class="form-control" name="content"></textarea>
+                        <div class="text-danger p-1 error-field">
                            {{ post_form.content.errors }}
                         </div>
                         
                     </div>
                     <div class="mb-3">
-                        {{ post_form.image.errors }}
-                        <label for="{{ form.image.id_for_label }}" class="form-label">Post image:</label>
-                        <input type="file" class="form-control" name="image">{{ form.image }}</input>
+                        
+                        <label for="{{ post_form.image.id_for_label }}" class="form-label">Post image:</label>
+                        <input type="file" class="form-control" name="image" />
+                        <div class="text-danger p-1 error-field">
+                           {{ post_form.image.errors }}
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-success">Add Post</button>
+                    <button type="submit" class="btn btn-success" name="submit_post_form">Add Post</button>
                 </form>  
             </div>
         </div>

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Post, Like
 from profiles.models import Profile
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 # Create your views here.
 
 
@@ -13,21 +13,33 @@ def posts_index(request):
     # Need to get friends posts
     # get groups posts
 
-    post_form = PostForm(request.POST or None, request.FILES or None)
-    if request.method == "POST":
+    post_form = PostForm()
+    comment_form = CommentForm()
+    post_added = False
+
+    if 'submit_post_form' in request.POST:
         post_form = PostForm(request.POST, request.FILES)
-        print(request.POST)
         if post_form.is_valid():
             post_instance = post_form.save(commit=False)
             post_instance.author = profile
             post_instance.save()
+            post_added = True
 
-            return redirect("posts:posts-index")
+    elif 'submit_comment_form' in request.POST:
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            post_id = request.POST.get("post_id")
+            comment_instance = comment_form.save(commit=False)
+            comment_instance.user = profile
+            comment_instance.post = Post.objects.get(id=post_id)
+            comment_instance.save()
 
     context = {
         'posts': posts,
         'profile': profile,
-        'post_form': post_form
+        'post_form': post_form,
+        'comment_form': comment_form,
+        'post_added': post_added
     }
 
     return render(request, 'posts/index.html', context)

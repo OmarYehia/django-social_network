@@ -1,6 +1,7 @@
 .posts-list .card .created-text,
 .create-post-form .form-label,
-.create-post-form input[type=file] {
+.create-post-form input,
+.create-comment-form input {
     font-size:13px;
      color:#333;
 }
@@ -12,6 +13,8 @@
     padding: 5px;
 }
 
-.btn {
+.btn,
+.error-field,
+.success-field {
     font-size: 14px;
 }
