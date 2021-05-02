@@ -22,6 +22,7 @@ class Profile(models.Model):
     date_of_birth = models.DateField(null=True, editable=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
 
     def __str__(self):
         return f'{self.user.username}'

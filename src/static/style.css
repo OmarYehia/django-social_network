@@ -7,7 +7,8 @@
 }
 .updated-profile-form{
   font-weight: 200;
-  line-height: 4
+  line-height: 4;
+
 }
 .updated-profile-form input, .updated-profile-form textarea {
   font-weight: 200;
@@ -32,9 +33,9 @@
     display: none;
 }
 .avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+
 }
 
 .created-text {
