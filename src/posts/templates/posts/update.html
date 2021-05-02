@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load profanity %}
+{% block title %}Update Post{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <!-- <h3>Update Post</h3>
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit">Update</button>
+        </form> -->
+
+        
+        {{ form.non_field_errors }}
+            <!-- {% if post_added %}
+            <div class="alert alert-success success-field">
+                <span>Post added successfully!</span>
+            </div>
+            {% endif %} -->
+            <form class="create-post-form border rounded p-3" action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ form.content.id_for_label }}" class="form-label">Post Content:</label>
+                    <textarea class="form-control" name="content">{{ form.content.value }}</textarea>
+                    <div class="text-danger p-1 error-field">
+                        {{ form.content.errors }}
+                    </div>
+                    
+                </div>
+                <div class="mb-3">
+                    
+                    <label for="{{ form.image.id_for_label }}" class="form-label">Post image:</label>
+                    <input type="file" class="form-control" name="image" />
+                    <div class="text-danger p-1 error-field">
+                        {{ form.image.errors }}
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success" name="submit_post_form">Update Post</button>
+            </form>  
+        </div>
+        
+    </div>
+{% endblock content %}

@@ -3,6 +3,9 @@ from .models import Post, Like
 from profiles.models import Profile
 from .forms import PostForm, CommentForm
 from django.db.models import Q
+from django.views.generic import DeleteView, UpdateView
+from django.urls import reverse_lazy
+from django.contrib import messages
 # Create your views here.
 
 
@@ -15,11 +18,10 @@ def posts_index(request):
         friend_profile = Profile.objects.get(user=friend)
         friend_profiles.append(friend_profile)
 
-    posts = Post.objects.filter(Q(author=profile) | Q(
-        author__in=friend_profiles))  # Gets own posts
-    # Need to get friends posts
+    posts = Post.objects.filter(
+        Q(author=profile) |
+        Q(author__in=friend_profiles))
     # get groups posts
-    print(posts)
 
     post_form = PostForm()
     comment_form = CommentForm()
@@ -81,3 +83,33 @@ def like_unlike_post(request):
         like.save()
 
     return redirect('posts:posts-index')
+
+
+class PostDeleteView(DeleteView):
+    model = Post
+    template_name = 'posts/confirm_delete.html'
+    success_url = reverse_lazy('posts:posts-index')
+
+    def get_object(self, *args, **kwargs):
+        pk = self.kwargs.get('pk')
+        post = Post.objects.get(pk=pk)
+        if not post.author.user == self.request.user:
+            messages.warning(
+                self.request, 'You can delete only your own posts.')
+
+        return post
+
+
+class PostUpdateView(UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'posts/update.html'
+    success_url = reverse_lazy('posts:posts-index')
+
+    def form_valid(self, form):
+        profile = Profile.objects.get(user=self.request.user)
+        if form.instance.author == profile:
+            return super().form_valid(form)
+        else:
+            form.add_error(None, 'You can update only your own posts.')
+            return super().form_invalid(form)
