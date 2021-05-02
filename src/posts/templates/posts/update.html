@@ -4,20 +4,11 @@
 
 {% block content %}
     <div class="container">
-        <!-- <h3>Update Post</h3>
-        <form action="" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form }}
-            <button type="submit">Update</button>
-        </form> -->
-
+        <h3>Update Post</h3>
+        <div class="alert alert-danger p-1 error-field">
+            {{ form.non_field_errors }}
+        </div>
         
-        {{ form.non_field_errors }}
-            <!-- {% if post_added %}
-            <div class="alert alert-success success-field">
-                <span>Post added successfully!</span>
-            </div>
-            {% endif %} -->
             <form class="create-post-form border rounded p-3" action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="mb-3">
