@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import FileExtensionValidator
 from profiles.models import Profile
 from profanity.validators import validate_is_profane
+from groups.models import Group
 # Create your models here.
 
 
@@ -15,6 +16,8 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name='posts')
+    group = models.ForeignKey(
+        Group, default=None, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.pk)

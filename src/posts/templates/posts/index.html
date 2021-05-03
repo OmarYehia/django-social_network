@@ -3,8 +3,8 @@
 {% block title %}Posts{% endblock title %}
 
 {% block content %}
-<div class="main-section">
-    <div class="row">
+<div class="main-section" >
+    <div class="row" style="z-index: -2;">
         <!-- Post List -->
         <div class="posts-list col-7">
             {% for post in posts %}
@@ -89,8 +89,8 @@
             {% endfor %}
         </div>
         <!-- Post Form -->
-        <div class="col-5 ">
-            <div class="sticky-top shadow" style="z-index: -2;">
+        <div class="col-5 " style="z-index: 4;">
+            <div class="sticky-top shadow">
                 {{ post_form.non_field_errors }}
                 {% if post_added %}
                 <div class="alert alert-success success-field">
