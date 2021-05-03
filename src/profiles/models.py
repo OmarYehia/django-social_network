@@ -94,6 +94,7 @@ STATUS_CHOICES = (
 )
 
 
+
 class Relationship(models.Model):
     sender = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name='sender')

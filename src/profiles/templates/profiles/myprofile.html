@@ -11,7 +11,73 @@ My profile
 {% if confirm %}
 <li class="list-group-item list-group-item-success">Your profile has been updated </li>
 {% endif %}
-<a href="{% url 'profiles:profile-update' profile.user %}" class="btn btn-outline-dark">Update</a>
 
+
+<div class="card" style="width: 50rem; height: fit-content">
+    <div class="row">
+        <div class="col-4" >
+            <div class="mb-5">
+                <img src="{{profile.avatar.url}}" class="avatar" alt="avatar">
+            </div>
+            <div >
+                <a href="{% url 'profiles:profile-update' profile.user %}" class="btn btn-outline-dark">Update</a>
+            </div>
+
+        </div>
+        <div class="col">
+            <div class="card-body">
+              <h5 class="card-title">{{ profile }}</h5>
+                <table class="table">
+                    <tbody>
+                        <tr>
+                         <td>user name</td>
+                          <td>{{ profile.user }}</td>
+                        </tr>
+                    <tr>
+                         <td>first name</td>
+                          <td>{{ profile.first_name }}</td>
+                        </tr>
+                    <tr>
+                         <td>last name</td>
+                          <td>{{ profile.last_name }}</td>
+                        </tr>
+                    <tr>
+                         <td>bio</td>
+                          <td>{{ profile.bio }}</td>
+                        </tr>
+                    <tr>
+                         <td>no of friends</td>
+                          <td>{{ profile.friends_count }}</td>
+                        </tr>
+                    <tr>
+                         <td>your friends</td>
+                          <td>
+                              <ul>
+                                  {% for friend in profile.get_friends_users %}
+                                  <li>{{ friend }}</li>
+                                  {% endfor %}
+                              </ul>
+                          </td>
+                        </tr>
+
+
+                    </tbody>
+                </table>
+
+
+
+
+
+
+
+
+
+        </div>
+
+    </div>
+
+
+  </div>
+</div>
 
 {% endblock content %}

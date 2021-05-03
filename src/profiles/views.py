@@ -29,7 +29,6 @@ def my_profile_view(request, username):
 
 
 class ProfileUpdateView(UpdateView):
-
     model = Profile
     form_class = ProfileModelForm
     template_name = 'profiles/update.html'
