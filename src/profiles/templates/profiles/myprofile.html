@@ -5,5 +5,13 @@ My profile
 {% endblock title %}
 
 {% block content %}
-<h1>my profile</h1>
+{% load crispy_forms_tags %}
+
+
+{% if confirm %}
+<li class="list-group-item list-group-item-success">Your profile has been updated </li>
+{% endif %}
+<a href="{% url 'profiles:profile-update' profile.user %}" class="btn btn-outline-dark">Update</a>
+
+
 {% endblock content %}

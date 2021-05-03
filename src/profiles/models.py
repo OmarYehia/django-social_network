@@ -12,8 +12,8 @@ class Profile(models.Model):
     avatar = models.ImageField(upload_to='avatars', default='avatar.png')
     background = models.ImageField(
         upload_to='background', default='background.png')
-    following = models.ManyToManyField(
-        User, related_name='following', blank=True)
+    friends = models.ManyToManyField(
+        User, related_name='friends', blank=True)
     bio = models.TextField(default="no bio..")
     email = models.EmailField(null=True)
     first_name = models.CharField(max_length=100, null=True)
@@ -23,6 +23,7 @@ class Profile(models.Model):
     date_of_birth = models.DateField(null=True, editable=False)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(unique=True, blank=True, null=True)
 
     def __str__(self):
         return str(self.user)
@@ -56,15 +57,15 @@ class Profile(models.Model):
             total += i.get_total_likes
         return total
 
-    def get_following(self):
-        return self.following.all()
+    def get_friends(self):
+        return self.friends.all()
 
-    def get_following_users(self):
-        following_list = [profile for profile in self.get_following()]
-        return following_list
+    def get_friends_users(self):
+        friends_list = [profile for profile in self.get_friends()]
+        return friends_list
 
-    def get_my_and_following_posts(self):
-        users = [user for user in self.get_following()]
+    def get_my_and_friends_posts(self):
+        users = [user for user in self.get_friends()]
         posts = []
         qs = None
         for u in users:
@@ -78,29 +79,17 @@ class Profile(models.Model):
                         key=lambda obj: obj.created)
         return qs
 
-    def get_proposals_for_following(self):
+    def get_proposals_for_friends(self):
         profiles = Profile.objects.all().exclude(user=self.user)
-        followers_list = [profile for profile in self.get_following()]
+        friends_list = [profile for profile in self.get_friends()]
         available = [
-            profile.user for profile in profiles if profile.user not in followers_list]
+            profile.user for profile in profiles if profile.user not in friends_list]
         random.shuffle(available)
         return available[:3]
 
     @property
-    def following_count(self):
-        return self.get_following().count()
-
-    def get_followers(self):
-        qs = Profile.objects.all()
-        followers_list = []
-        for profile in qs:
-            if self.user in profile.get_following():
-                followers_list.append(profile)
-        return followers_list
-
-    @property
-    def followers_count(self):
-        return len(self.get_followers())
+    def friends_count(self):
+        return self.get_friends().count()
 
 
 STATUS_CHOICES = (
