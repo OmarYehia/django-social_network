@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Profile
+from .models import Profile, Relationship
 from django.contrib.auth.models import User
 from .forms import ProfileModelForm
 from django.views.generic import UpdateView
@@ -26,6 +26,26 @@ def my_profile_view(request, username):
         'confirm': confirm
     }
     return render(request, 'profiles/myprofile.html', context)
+
+
+def invites_received_view(request, slug):
+    profile = Profile.objects.get(slug=slug)
+    qs = Relationship.objects.invitaions_received(profile)
+
+    context = {
+        'qs': qs
+    }
+    return render(request, 'profiles/my_invites.html', context)
+
+
+def profiles_list_view(request, slug):
+    user = slug
+    qs = Profile.objects.invitaions_received(user)
+
+    context = {
+        'qs': qs
+    }
+    return render(request, 'profiles/profile_list.html', context)
 
 
 class ProfileUpdateView(UpdateView):

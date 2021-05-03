@@ -2,9 +2,32 @@ from django.db import models
 from django.contrib.auth.models import User
 from itertools import chain
 import random
+from django.db.models import Q
 
 # Create your models here.
 GENDER_CHOICES = (('M', 'Male'), ('F', 'Female'))
+
+
+class ProfileManager(models.Manager):
+    def get_all_profiles_to_invite(self, sender):
+        profiles = Profile.objects.all().exclude(user=sender)
+        profile = Profile.objects.get(user=sender)
+        qs = Relationship.objects.filter(Q(sender=profile) | Q(receiver=profile))
+        print(qs)
+        accepted = []
+        for rel in qs:
+            if rel.status == 'accepted':
+                accepted.append(rel.receiver)
+                accepted.append(rel.sender)
+        print(accepted)
+
+        available = [profile for profile in profiles if profile not in accepted]
+        print(available)
+        return available
+
+    def get_all_profiles(self, me):
+        profiles = Profile.objects.all().exclude(user=me)
+        return profiles
 
 
 class Profile(models.Model):
@@ -24,6 +47,8 @@ class Profile(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(unique=True, blank=True, null=True)
+
+    objects = ProfileManager()
 
     def __str__(self):
         return f'{self.user.first_name} {self.user.last_name}'
@@ -94,6 +119,11 @@ STATUS_CHOICES = (
 )
 
 
+class RelationshipManager(models.Manager):
+    def invitaions_received(self, receiver):
+        qs = Relationship.objects.filter(receiver=receiver, status='send')
+        return qs
+
 
 class Relationship(models.Model):
     sender = models.ForeignKey(
@@ -103,6 +133,8 @@ class Relationship(models.Model):
     status = models.CharField(max_length=8, choices=STATUS_CHOICES)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    objects = RelationshipManager()
 
     def __str__(self):
         return f"{self.sender}-{self.receiver}-{self.status}"

@@ -7,7 +7,9 @@
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav w-100 d-flex">
       <li class="nav-item ms-auto me-3">
+        {% if user.username %}
         <a class="nav-link" href="{% url 'profiles:my-profile-view' user.username %}">{{ user.first_name }} {{ user.last_name }}</a>
+        {% endif %}
       </li>
     </ul>
   </div>
