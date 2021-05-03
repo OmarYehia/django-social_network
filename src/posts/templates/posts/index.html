@@ -8,7 +8,7 @@
         <!-- Post List -->
         <div class="posts-list col-7">
             {% for post in posts %}
-            <div class="card w-100 mb-3">
+            <div class="card w-100 mb-3 shadow-sm">
             <div class="post-info p-3 d-flex justify-content-between">
                 <div class="d-flex">
                     <img style="width: 40px; height: 40px;" src="/media/{{ post.author.avatar }}" class="rounded-circle">
@@ -52,7 +52,7 @@
                     <button onclick="toggleComment(this)" class="btn btn-outline-dark mb-2 show-comments" id="show-comments-{{ post.id }}">Show Comments</button>
                     <div class="comment-list mt-3 border-top py-3 not-visible">
                         {% for comment in post.comments.all %}
-                            <div class="card mb-2">
+                            <div class="card mb-2 shadow-sm">
                                 <div class="card-body">
                                     <div class="d-flex mb-2 border-bottom">
                                         <img style="width: 32px; height: 32px;" src="/media/{{ comment.user.avatar }}" class="rounded-circle">
@@ -67,7 +67,7 @@
                         {% endfor %}
                     </div>
                     <!-- Comment Form -->
-                    <div class="comment-form border-top mt-3">
+                    <div class="comment-form border-top mt-3 shadow-sm">
                         {{ comment_form.non_field_errors }}
                         <form class="create-comment-form p-2" action="" method="POST">
                             {% csrf_token %}
@@ -90,7 +90,7 @@
         </div>
         <!-- Post Form -->
         <div class="col-5 ">
-            <div class="sticky-top">
+            <div class="sticky-top shadow">
                 {{ post_form.non_field_errors }}
                 {% if post_added %}
                 <div class="alert alert-success success-field">
