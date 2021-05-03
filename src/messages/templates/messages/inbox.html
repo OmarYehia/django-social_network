@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Inbox{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 p-5">
+            <h3>Your Conversations</h3>
+        </div>
+    </div>
+
+
+    {% for thread in threads %}
+    <div class="row mb-3 d-flex justify-content-center">
+        <div class="card col-6 p-3 shadow-sm rounded">
+            {% if thread.user == profile %}
+                <div class="d-flex align-items-center justify-content-center">
+                    <img style="width: 40px; height: 40px;" src="/media/{{ thread.receiver.avatar }}" class="rounded-circle">
+                    <p class=" card-text p-2 text-black-50 created-text" >{{ thread.receiver }}</p>
+                </div>
+            {% elif thread.receiver == profile %}
+                <div class="d-flex align-items-center justify-content-center">
+                    <img style="width: 40px; height: 40px;" src="/media/{{ thread.user.avatar }}" class="rounded-circle">
+                    <p class=" card-text p-2 text-black-50 created-text" >{{ thread.user }}</p>
+                </div>
+            {% endif %}
+            <a href="{% url 'messages:thread' thread.pk %}" class="stretched-link"></a>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="row">
+        <div class="col-12 p-5">
+            <form action="{% url 'messages:create-thread' %}">
+                <button type="submit" class="btn btn-outline-success">Start a Conversation</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

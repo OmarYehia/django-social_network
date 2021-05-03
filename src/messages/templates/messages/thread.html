@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Messages{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="card col-12 mt-5 p-3 shadow-sm">
+            {% if thread.receiver == profile %}
+                <h5>@{{ thread.user }}</h5>
+            {% else %}
+                <h5>@{{ thread.receiver }}</h5>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if messages.all.count == 0 %}
+    <div class="row my-5">
+        <div class="col-12">
+            <p class="empty-text">No messages yet. Start a conversation below...</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% for message in messages %}
+    <div class="row">
+        <div class="col-12 my-1">
+            {% if message.sender_profile == profile %}
+            <div class="sent-message my-1 d-flex justify-content-end align-items-end">
+                <p class="m-0 p-3">{{ message.body }} </p>
+                <img style="width: 32px; height: 32px;" src="/media/{{ message.sender_profile.avatar }}" class="rounded-circle m-2">
+            </div>
+            <span style="float: right;" class="message-time text-black-50 p-3">{{ message.created_at }}</span>
+            {% elif message.receiver_profile == profile %}
+            <div class="my-1 d-flex  align-items-center">
+                <div class="d-flex received-message align-items-end">
+                    <img style="width: 32px; height: 32px;" src="/media/{{ message.sender_profile.avatar }}" class="rounded-circle m-2">
+                    <p class="m-0 p-3">{{ message.body }} </p>
+                </div>
+            <span class="message-time text-black-50 p-3">{{ message.created_at }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="card col-12 p-3 shadow-sm">
+            <form action="{% url 'messages:create-message' thread.pk %}" method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-success" type="submit">Send Message <i class="fas fa-paper-plane"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+window.scrollTo(0,document.body.scrollHeight);
+</script>
+{% endblock scripts %}

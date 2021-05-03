@@ -25,13 +25,15 @@
 .error-field,
 .success-field,
 .stat-field,
-.comment-body{
+.comment-body,
+.message-time {
     font-size: 14px;
 }
 
 .not-visible {
     display: none;
 }
+
 .avatar {
   width: 100px;
   height: 100px;
@@ -40,4 +42,25 @@
 
 .created-text {
     margin: 0;
+}
+
+.empty-text {
+    color: #333;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.sent-message {
+    background-color: #333;
+    color: white;
+    border-radius: 30px;
+    width: 33%;
+    float: right;
+}
+
+.received-message {
+    background-color: rgb(207, 205, 205);
+    color: #333;
+    border-radius: 30px;
+    width: 33%;
 }
