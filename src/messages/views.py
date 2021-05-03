@@ -44,7 +44,7 @@ class CreateThread(View):
 
             # Get only his friends so he can send messages to them
             friend_profiles = []
-            friends = logged_in_user_profile.following.all()
+            friends = logged_in_user_profile.friends.all()
             for friend in friends:
                 friend_profile = Profile.objects.get(user=friend)
                 friend_profiles.append(friend_profile)

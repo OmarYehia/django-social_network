@@ -12,7 +12,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 def my_profile_view(request, username):
     user = User.objects.get(username=username)
     profile = Profile.objects.get(user=user)
-    form = ProfileModelForm(request.POST or None, request.FILES or None, instance=profile)
+    form = ProfileModelForm(request.POST or None,
+                            request.FILES or None, instance=profile)
     confirm = False
 
     if request.method == 'POST':

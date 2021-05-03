@@ -2,4 +2,25 @@
 
 {% block title %}Home{% endblock title %}
 
-{% block content %}{% endblock content %}   
+{% block content %}
+<div class="container mt-5">
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h1 class="pt-5">Welcome to Social Network</h1>
+            <p class="text-black-50 fs-5">Connecting people..</p>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h5 class="p-3">Please Login or Register to use the website</h5>
+        </div>
+        <div class="col-6 text-center mt-4">
+            <a href="{% url 'login' %}" class="btn btn-outline-dark w-75 ">Login</a>
+        </div>
+        <div class="col-6 text-center mt-4">
+            <a href="{% url 'signup' %}" class="btn btn-outline-dark w-75 ">Signup</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}   
