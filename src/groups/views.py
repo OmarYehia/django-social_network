@@ -4,6 +4,7 @@ from .models import Group
 from .forms import GroupForm
 from profiles.models import Profile
 from posts.models import Post
+from posts.forms import PostForm, CommentForm
 
 # Create your views here.
 
@@ -65,3 +66,27 @@ class ViewGroup(View):
         }
 
         return render(request, 'groups/view.html', context)
+
+    def post(self, request, pk, *args, **kwargs):
+        user = request.user
+        profile = Profile.objects.get(user=user)
+        group = Group.objects.get(pk=pk)
+
+        if 'submit_post_form' in request.POST:
+            post_form = PostForm(request.POST, request.FILES)
+            if post_form.is_valid():
+                post_instance = post_form.save(commit=False)
+                post_instance.author = profile
+                post_instance.group = group
+                post_instance.save()
+                return redirect(request.headers.get('Referer'))
+
+        elif 'submit_comment_form' in request.POST:
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                post_id = request.POST.get("post_id")
+                comment_instance = comment_form.save(commit=False)
+                comment_instance.user = profile
+                comment_instance.post = Post.objects.get(id=post_id)
+                comment_instance.save()
+                return redirect(request.headers.get('Referer'))
