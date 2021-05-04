@@ -17,9 +17,8 @@
                 <div>
                     {% if post.author == profile %}
                         <a href="{% url 'posts:post-update' post.id %}" class="btn btn-outline-dark">Update</a>
-                        <a href="{% url 'posts:post-delete' post.id %}" class="btn btn-outline-dark">Delete</a>
                     {% endif %}
-                    {% if group.owner == profile %}
+                    {% if group.owner == profile or post.author == profile %}
                         <a href="{% url 'posts:post-delete' post.id %}" class="btn btn-outline-dark">Delete</a>
                     {% endif %}
                 </div>
