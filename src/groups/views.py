@@ -41,9 +41,9 @@ class CreateGroup(View):
             group_instance = form.save(commit=False)
             group_instance.owner = logged_in_user_profile
             group_instance.save()
-            group_instance.users.set([logged_in_user_profile])
+            group_instance.users.add(logged_in_user_profile)
 
-            return redirect('groups:groups-index')
+            return redirect('groups:view-group', pk=group_instance.pk)
 
         return render(request, 'groups/create.html', {'form': form})
 
@@ -90,3 +90,24 @@ class ViewGroup(View):
                 comment_instance.post = Post.objects.get(id=post_id)
                 comment_instance.save()
                 return redirect(request.headers.get('Referer'))
+
+
+class JoinGroup(View):
+    def get(self, request, pk, *args, **kwargs):
+        group = Group.objects.get(pk=pk)
+        user = request.user
+        user_profile = Profile.objects.get(user=user)
+
+        if user_profile in group.users.all():
+            return redirect('groups:view-group', pk=pk)
+
+        return render(request, 'groups/confirm_join.html', {'group': group})
+
+    def post(self, request, pk, *args, **kwargs):
+        group = Group.objects.get(pk=pk)
+        user = request.user
+        user_profile = Profile.objects.get(user=user)
+
+        group.users.add(user_profile)
+
+        return redirect('groups:view-group', pk=pk)
