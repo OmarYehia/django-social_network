@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Profile, Relationship
 from django.contrib.auth.models import User
 from .forms import ProfileModelForm
@@ -32,11 +32,46 @@ def my_profile_view(request, username):
 def invites_received_view(request, slug):
     profile = Profile.objects.get(slug=slug)
     qs = Relationship.objects.invitaions_received(profile)
+    result = list(map(lambda x: x.sender, qs))
+    is_empty = False
+    if len(result) == 0:
+        is_empty = True
 
     context = {
-        'qs': qs
+        'qs': result,
+        'is_empty': is_empty
     }
+    print(is_empty)
     return render(request, 'profiles/my_invites.html', context)
+
+
+def accept_invitation(request, slug):
+    if request.method == 'POST':
+        pk = request.POST.get('profile_pk')
+        sender = Profile.objects.get(pk=pk)
+        receiver = Profile.objects.get(user=request.user)
+
+        rel = get_object_or_404(Relationship, sender=sender, receiver=receiver)
+
+        if rel.status == 'send':
+            rel.status = 'accepted'
+            rel.save()
+            return redirect(request.META.get('HTTP_REFERER'))
+
+    return redirect('/posts')
+
+
+def reject_invitation(request,slug):
+    if request.method == 'POST':
+        pk = request.POST.get('profile_pk')
+        sender = Profile.objects.get(pk=pk)
+        receiver = Profile.objects.get(user=request.user)
+
+        rel = get_object_or_404(Relationship, sender=sender, receiver=receiver)
+        rel.delete()
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    return redirect('/posts')
 
 
 def profiles_list_view(request, slug):
@@ -102,7 +137,6 @@ def remove_from_fiends(request):
         return redirect(request.META.get('HTTP_REFERER'))
 
     return redirect('/posts')
-
 
 
 class ProfileUpdateView(UpdateView):
