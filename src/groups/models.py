@@ -5,7 +5,7 @@ from profiles.models import Profile
 
 
 class Group(models.Model):
-    user = models.ManyToManyField(Profile, blank=True)
+    users = models.ManyToManyField(Profile, blank=True)
     owner = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name='+')
     name = models.CharField(max_length=50)
@@ -13,6 +13,7 @@ class Group(models.Model):
         max_length=500, default='No overview available', blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    # posts have reverse relation in posts.models --> post_set.all() to get all posts
 
     def __str__(self):
         return self.name

@@ -26,7 +26,9 @@ urlpatterns = [
     path('', include("accounts.urls")),
     path('profiles/', include('profiles.urls')),
     path('posts/', include('posts.urls', namespace='posts')),
-    path('messages/', include('messages.urls', namespace='messages'))
+    path('messages/', include('messages.urls', namespace='messages')),
+
+    path('groups/', include('groups.urls', namespace='groups'))
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

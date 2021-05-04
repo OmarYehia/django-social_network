@@ -1,3 +1,50 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.views import View
+from .models import Group
+from .forms import GroupForm
+from profiles.models import Profile
 
 # Create your views here.
+
+
+class ListGroups(View):
+    def get(self, request, *args, **kwargs):
+        logged_in_user_profile = Profile.objects.get(user=request.user)
+
+        groups = Group.objects.all()
+
+        context = {
+            'groups': groups,
+            'profile': logged_in_user_profile
+        }
+
+        return render(request, 'groups/groups.html', context)
+
+
+class CreateGroup(View):
+    def get(self, request, *args, **kwargs):
+        form = GroupForm()
+
+        context = {
+            'form': form,
+        }
+
+        return render(request, 'groups/create.html', context)
+
+    def post(self, request, *args, **kwargs):
+        form = GroupForm(request.POST)
+        logged_in_user_profile = Profile.objects.get(user=request.user)
+
+        if form.is_valid():
+            new_group = Group(
+                owner=logged_in_user_profile,
+                name=request.POST.get('name'),
+                overview=request.POST.get('overview')
+                if request.POST.get('overview')
+                else None
+            )
+
+            new_group.save()
+            new_group.users.set([logged_in_user_profile])
+
+        return redirect('groups:groups-index')

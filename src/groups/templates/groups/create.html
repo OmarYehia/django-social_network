@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Group{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 mb-3 d-flex">
+            <a href="{% url 'groups:groups-index' %}" class="btn btn-outline-dark ms-auto">Back to your groups</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h3>Create a new group</h3>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-3 mb-5">
+        <div class="col-md-5 col-sm-12">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-success mt-3">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
