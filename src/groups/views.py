@@ -3,6 +3,7 @@ from django.views import View
 from .models import Group
 from .forms import GroupForm
 from profiles.models import Profile
+from posts.models import Post
 
 # Create your views here.
 
@@ -22,7 +23,6 @@ class ListGroups(View):
 
 
 class CreateGroup(View):
-
     def get(self, request, *args, **kwargs):
         form = GroupForm()
 
@@ -45,3 +45,19 @@ class CreateGroup(View):
             return redirect('groups:groups-index')
 
         return render(request, 'groups/create.html', {'form': form})
+
+
+class ViewGroup(View):
+    def get(self, request, pk, *args, **kwargs):
+        user = request.user
+        profile = Profile.objects.get(user=user)
+        group = Group.objects.get(pk=pk)
+        group_posts = Post.objects.filter(group=group)
+
+        context = {
+            'profile': profile,
+            'group': group,
+            'posts': group_posts
+        }
+
+        return render(request, 'groups/view.html', context)

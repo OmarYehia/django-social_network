@@ -5,7 +5,7 @@ from profiles.models import Profile
 
 
 class Group(models.Model):
-    users = models.ManyToManyField(Profile, blank=True)
+    users = models.ManyToManyField(Profile, blank=True, related_name='groups')
     owner = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name='+')
     name = models.CharField(max_length=50)

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load profanity %}
-{% block title %}Home{% endblock title %}
+{% block title %}{{ group.name }}{% endblock title %}
 
 {% block content %}
 <div class="main-section" >
@@ -10,18 +10,16 @@
             {% for post in posts %}
             <div class="card w-100 mb-3 shadow-sm">
             <div class="post-info p-3 d-flex justify-content-between">
-                <div class="d-flex align-items-center">
+                <div class="d-flex">
                     <img style="width: 40px; height: 40px;" src="/media/{{ post.author.avatar }}" class="rounded-circle">
-                    <p class=" card-text p-2 text-black-50 created-text" >{{ post.author }} - {{ post.updated_at|timesince }} ago
-                    <br>
-                    {% if post.group %}
-                    Group ({{ post.group.name }})
-                    {% endif %}
-                    </p>
+                    <p class=" card-text p-2 text-black-50 created-text" >{{ post.author }} - {{ post.updated_at|timesince }} ago</p>
                 </div>
                 <div>
                     {% if post.author == profile %}
                         <a href="{% url 'posts:post-update' post.id %}" class="btn btn-outline-dark">Update</a>
+                        <a href="{% url 'posts:post-delete' post.id %}" class="btn btn-outline-dark">Delete</a>
+                    {% endif %}
+                    {% if group.owner == profile %}
                         <a href="{% url 'posts:post-delete' post.id %}" class="btn btn-outline-dark">Delete</a>
                     {% endif %}
                 </div>

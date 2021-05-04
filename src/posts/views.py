@@ -19,10 +19,13 @@ def posts_index(request):
         friend_profile = Profile.objects.get(user=friend)
         friend_profiles.append(friend_profile)
 
+    groups = profile.groups.all()
+
     posts = Post.objects.filter(
         Q(author=profile) |
-        Q(author__in=friend_profiles))
-    # get groups posts
+        Q(author__in=friend_profiles) |
+        Q(group__in=groups)
+    )
 
     post_form = PostForm()
     comment_form = CommentForm()
