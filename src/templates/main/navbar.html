@@ -5,7 +5,7 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
-         {% if user.is_authenticated %}
+         {% if user %}
     <ul class="navbar-nav w-100 d-flex">
       <li class="nav-item ms-auto me-3 inbox-icon-container">
         <a class="nav-link inbox-icon" href="{% url 'groups:groups-index' %}"><i class="fas fa-users"></i></a>

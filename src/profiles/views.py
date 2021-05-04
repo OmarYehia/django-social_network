@@ -9,26 +9,6 @@ from django.db.models import Q
 
 
 @login_required(login_url="/login")
-def my_profile_view(request, username):
-    user = User.objects.get(username=username)
-    profile = Profile.objects.get(user=user)
-    form = ProfileModelForm(request.POST or None,
-                            request.FILES or None, instance=profile)
-    confirm = False
-
-    if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            confirm = True
-
-    context = {
-        'profile': profile,
-        'form': form,
-        'confirm': confirm
-    }
-    return render(request, 'profiles/myprofile.html', context)
-
-
 def invites_received_view(request, slug):
     profile = Profile.objects.get(slug=slug)
     qs = Relationship.objects.invitaions_received(profile)
@@ -45,6 +25,7 @@ def invites_received_view(request, slug):
     return render(request, 'profiles/my_invites.html', context)
 
 
+@login_required(login_url="/login")
 def accept_invitation(request, slug):
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
@@ -61,7 +42,8 @@ def accept_invitation(request, slug):
     return redirect('/posts')
 
 
-def reject_invitation(request,slug):
+@login_required(login_url="/login")
+def reject_invitation(request, slug):
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
         sender = Profile.objects.get(pk=pk)
@@ -74,6 +56,7 @@ def reject_invitation(request,slug):
     return redirect('/posts')
 
 
+@login_required(login_url="/login")
 def profiles_list_view(request, slug):
     user = User.objects.get(username=slug)
     qs = Profile.objects.get_all_profiles(user)
@@ -99,6 +82,36 @@ def profiles_list_view(request, slug):
     return render(request, 'profiles/profile_list.html', context)
 
 
+@login_required(login_url="/login")
+def profiles_detail_view(request, slug):
+    user = Profile.objects.get(user=request.user)
+    profile = Profile.objects.get(slug=slug)
+    rel_r = Relationship.objects.filter(sender=user)
+    rel_s = Relationship.objects.filter(receiver=user)
+    rel_receiver = []
+    rel_sender = []
+    for item in rel_r:
+        rel_receiver.append(item.receiver.user)
+    for item in rel_s:
+        rel_sender.append(item.sender.user)
+    posts = profile.get_all_author_posts
+    print(request.user)
+    is_empty = False
+    if len(posts) == 0:
+        is_empty = True
+
+    context = {
+        'user': user,
+        'profile': profile,
+        'posts': posts,
+        'rel_sender': rel_sender,
+        'rel_receiver': rel_receiver,
+        'is_empty': is_empty
+    }
+    return render(request, 'profiles/detail.html', context)
+
+
+@login_required(login_url="/login")
 def invite_profiles_list_view(request, slug):
     user = User.objects.get(username=slug)
     qs = Profile.objects.get_all_profiles_to_invite(user)
@@ -109,6 +122,7 @@ def invite_profiles_list_view(request, slug):
     return render(request, 'profiles/to_invite_list.html', context)
 
 
+@login_required(login_url="/login")
 def send_invitation(request):
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
@@ -123,6 +137,7 @@ def send_invitation(request):
     return redirect('/posts')
 
 
+@login_required(login_url="/login")
 def remove_from_fiends(request):
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
@@ -157,3 +172,6 @@ class ProfileUpdateView(UpdateView):
         else:
             form.add_error(None, 'You can update only your own profile.')
             return super().form_invalid(form)
+
+
+profile_update_view = login_required(ProfileUpdateView.as_view(), login_url="/login")
