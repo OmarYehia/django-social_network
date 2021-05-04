@@ -60,3 +60,16 @@ class Like(models.Model):
 
     def __str__(self):
         return f"{self.user}-{self.value}-Post id: {self.post}"
+
+
+class CustomProfanity(models.Model):
+    class Meta:
+        verbose_name = 'Custom Profanity Word'
+
+    added_by = models.ForeignKey(
+        Profile, on_delete=models.SET_NULL, blank=True, null=True)
+    bad_word = models.CharField(max_length=60)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.bad_word)

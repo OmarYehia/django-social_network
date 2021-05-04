@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
-{% load profanity %}
 {% block title %}Update Post{% endblock title %}
 
 {% block content %}
     <div class="container">
         <h3>Update Post</h3>
+        {% if form.non_field_errors %}
         <div class="alert alert-danger p-1 error-field">
             {{ form.non_field_errors }}
         </div>
+        {% endif %}
         
             <form class="create-post-form border rounded p-3" action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
