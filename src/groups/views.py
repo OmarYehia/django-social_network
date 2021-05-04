@@ -22,6 +22,7 @@ class ListGroups(View):
 
 
 class CreateGroup(View):
+
     def get(self, request, *args, **kwargs):
         form = GroupForm()
 
@@ -36,15 +37,11 @@ class CreateGroup(View):
         logged_in_user_profile = Profile.objects.get(user=request.user)
 
         if form.is_valid():
-            new_group = Group(
-                owner=logged_in_user_profile,
-                name=request.POST.get('name'),
-                overview=request.POST.get('overview')
-                if request.POST.get('overview')
-                else None
-            )
+            group_instance = form.save(commit=False)
+            group_instance.owner = logged_in_user_profile
+            group_instance.save()
+            group_instance.users.set([logged_in_user_profile])
 
-            new_group.save()
-            new_group.users.set([logged_in_user_profile])
+            return redirect('groups:groups-index')
 
-        return redirect('groups:groups-index')
+        return render(request, 'groups/create.html', {'form': form})
