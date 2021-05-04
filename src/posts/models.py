@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
 from profiles.models import Profile
+from django.contrib.auth.models import User
 from profanity.validators import validate_is_profane
 # Create your models here.
 
@@ -57,3 +58,16 @@ class Like(models.Model):
 
     def __str__(self):
         return f"{self.user}-{self.value}-Post id: {self.post}"
+
+
+class Notifications(models.Model):
+    # 1= like
+    # 2= comment 
+    # 3= follow
+    notification_type = models.IntegerField()
+    to_user = models.ForeignKey(User, related_name='notifications_to', on_delete=models.CASCADE, null=True)
+    from_user = models.ForeignKey(User, related_name='notifications_from', on_delete=models.CASCADE, null=True)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='+', blank=True, null=True)
+    comment = models.ForeignKey('Comment', on_delete=models.CASCADE, related_name='+', blank=True, null=True)
+    date = models.DateTimeField(auto_now=True)
+    user_has_seen = models.BooleanField(default=False)

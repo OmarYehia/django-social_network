@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from .models import Post, Like, Comment
+from .models import Post, Like, Comment, Notifications
 from profiles.models import Profile
 from .forms import PostForm, CommentForm
 from django.db.models import Q
-from django.views.generic import DeleteView, UpdateView
+from django.views.generic import DeleteView, UpdateView, View 
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponse
@@ -125,3 +125,25 @@ def CommentDelete(request, pk):
         comment.delete()
 
     return redirect('posts:posts-index')
+
+
+class PostNotifications(View):
+    def get(self,request,notification_pk,post_pk, *args, **kwargs):
+        notification = Notifications.objects.get(pk=notification_pk)
+        post = Post.objects.get(pk=post_pk)
+
+        notification.user_has_seen = True
+        notification.save()
+
+        return redirect('posts:posts-index',pk=post_pk)
+
+
+class FollowNotifications(View):
+    def get(self,request,notification_pk,profile_pk, *args, **kwargs):
+        notification = Notifications.objects.get(pk=notification_pk)
+        profile = Profile.objects.get(pk=profile_pk)
+
+        notification.user_has_seen = True
+        notification.save()
+
+        return redirect('profile',pk=profile_pk)
