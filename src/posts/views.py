@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Post, Like, Comment
+from .models import Post, Like, Comment, CustomProfanity
 from profiles.models import Profile
 from .forms import PostForm, CommentForm
 from django.db.models import Q
@@ -7,6 +7,7 @@ from django.views.generic import DeleteView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponse
+from better_profanity import profanity
 # Create your views here.
 
 
@@ -31,9 +32,21 @@ def posts_index(request):
     comment_form = CommentForm()
     post_added = False
 
+    # Custom profanity words
+    custom_badwords = CustomProfanity.objects.values_list(
+        'bad_word', flat=True)
+    profanity.load_censor_words(custom_badwords)
+
     if 'submit_post_form' in request.POST:
         post_form = PostForm(request.POST, request.FILES)
-        if post_form.is_valid():
+        valid = post_form.is_valid()
+
+        if profanity.contains_profanity(post_form.cleaned_data.get('content')):
+            custom_profanity_error = 'Please remove any profanity/swear words. (Added by an admin. Contact an admin if you believe this is wrong.)'
+            valid = False
+            post_form.errors['content'] = custom_profanity_error
+
+        if valid:
             post_instance = post_form.save(commit=False)
             post_instance.author = profile
             post_instance.save()
@@ -42,7 +55,14 @@ def posts_index(request):
 
     elif 'submit_comment_form' in request.POST:
         comment_form = CommentForm(request.POST)
-        if comment_form.is_valid():
+        valid = comment_form.is_valid()
+
+        if profanity.contains_profanity(comment_form.cleaned_data.get('body')):
+            custom_profanity_error = 'Please remove any profanity/swear words. (Added by an admin. Contact an admin if you believe this is wrong.)'
+            valid = False
+            comment_form.errors['body'] = custom_profanity_error
+
+        if valid:
             post_id = request.POST.get("post_id")
             comment_instance = comment_form.save(commit=False)
             comment_instance.user = profile
@@ -55,7 +75,7 @@ def posts_index(request):
         'profile': profile,
         'post_form': post_form,
         'comment_form': comment_form,
-        'post_added': post_added
+        'post_added': post_added,
     }
 
     return render(request, 'posts/index.html', context)
