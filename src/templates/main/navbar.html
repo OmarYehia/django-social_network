@@ -17,11 +17,13 @@
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fas fa-user"></i>
           </a>
+          {% if user.username %}
           <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" style="font-size: 14px;" href="{% url 'profiles:my-profile-view' user.username %}">Profile</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" style="font-size: 14px;" href="{% url 'logout' %}">Logout</a></li>
           </ul>
+          {% endif %}
         </li>
     </ul>
         {% endif %}

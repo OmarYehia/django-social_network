@@ -5,9 +5,51 @@ all profiles
 {% endblock %}
 
 {% block content %}
+{% if is_empty %}
+<h1>No profiles to interact with</h1>
+{% endif %}
 <ul>
     {% for item in qs %}
-        <li>{{ item }}</li>
+    <div class="card mb-3">
+        <div class=" card-body">
+            <div class="row">
+                   <div class="col-3">
+                      <img class="avatar rounded-circle" src="{{ item.avatar.url }}">
+                   </div>
+                   <div class="col-9">
+                       <h3>{{ item.user }}</h3>
+                       <p>{{ item.bio }}</p>
+                       <button class="btn  btn-outline-primary">See profile</button>
+                 {% if item.user not in rel_receiver and item.user not in rel_sender %}
+                        <form action="{% url 'profiles:send-invitation' %}" method="POST">
+                             {% csrf_token %}
+                            <input type="hidden" name="profile_pk" value="{{ item.pk }}"/>
+
+                            <button type="submit" class="btn  btn-outline-success">Add to friends</button>
+
+
+                         </form>
+                       {% endif %}
+                {% if item.user in rel_receiver and request.user not in item.friends.all %}
+                  <button class="btn btn-outline-secondary disabled">Waiting for approval</button>
+                {% endif %}
+                        {% if request.user in item.friends.all %}
+                 <form action="{% url 'profiles:remove-friend' %}" method="POST">
+                    {% csrf_token %}
+                     <input type="hidden" name="profile_pk" value="{{ item.pk }}"/>
+
+                      <button type="submit" class="btn btn-outline-danger">Remove from friends</button>
+
+                </form>
+                       {% endif %}
+                   </div>
+            </div>
+
+       </div>
+    </div>
+
+
+
     {% endfor %}
 </ul>
 {% endblock %}

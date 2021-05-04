@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from .forms import ProfileModelForm
 from django.views.generic import UpdateView
 from django.urls import reverse_lazy
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Q
 
 
 @login_required(login_url="/login")
@@ -40,13 +40,69 @@ def invites_received_view(request, slug):
 
 
 def profiles_list_view(request, slug):
-    user = slug
-    qs = Profile.objects.invitaions_received(user)
+    user = User.objects.get(username=slug)
+    qs = Profile.objects.get_all_profiles(user)
+    profile = Profile.objects.get(user=user)
+    rel_r = Relationship.objects.filter(sender=profile)
+    rel_s = Relationship.objects.filter(receiver=profile)
+    rel_receiver = []
+    rel_sender = []
+    for item in rel_r:
+        rel_receiver.append(item.receiver.user)
+    for item in rel_s:
+        rel_sender.append(item.sender.user)
+    is_empty = False
+    if len(qs) == 0:
+        is_empty = True
+
+    context = {
+        'qs': qs,
+        'rel_sender': rel_sender,
+        'rel_receiver': rel_receiver,
+        'is_empty': is_empty
+    }
+    return render(request, 'profiles/profile_list.html', context)
+
+
+def invite_profiles_list_view(request, slug):
+    user = User.objects.get(username=slug)
+    qs = Profile.objects.get_all_profiles_to_invite(user)
 
     context = {
         'qs': qs
     }
-    return render(request, 'profiles/profile_list.html', context)
+    return render(request, 'profiles/to_invite_list.html', context)
+
+
+def send_invitation(request):
+    if request.method == 'POST':
+        pk = request.POST.get('profile_pk')
+        user = request.user
+        sender = Profile.objects.get(user=user)
+        receiver = Profile.objects.get(pk=pk)
+
+        rel = Relationship.objects.create(sender=sender, receiver=receiver, status='send')
+
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    return redirect('/posts')
+
+
+def remove_from_fiends(request):
+    if request.method == 'POST':
+        pk = request.POST.get('profile_pk')
+        user = request.user
+        sender = Profile.objects.get(user=user)
+        receiver = Profile.objects.get(pk=pk)
+
+        rel = Relationship.objects.get(
+            (Q(sender=sender) & Q(receiver=receiver)) | Q(sender=receiver) & Q(receiver=sender)
+        )
+        rel.delete()
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    return redirect('/posts')
+
 
 
 class ProfileUpdateView(UpdateView):
@@ -67,27 +123,3 @@ class ProfileUpdateView(UpdateView):
         else:
             form.add_error(None, 'You can update only your own profile.')
             return super().form_invalid(form)
-
-# @login_required(login_url="/login")
-# class MyProfileView(TemplateView):
-#    template_name = 'profiles/my_profile.html'
-
-
-# my_profile_view = login_required(MyProfileView.as_view(),login_url="/login" )
-
-
-# @login_required(login_url="/login")
-# class MyProfileData(View):
-#   def get(self, *args, **kwargs):
-#      profile = Profile.objects.get(user=self.request.user)
-#     qs = profile.get_proposals_for_following()
-#     profiles_to_follow_list = []
-#    for user in qs:
-#       profile = Profile.objects.get(user__username=user.username)
-#      profile_item = {
-#         'id': profile.id,
-#        "user": profile.user.username,
-#       'avatar': profile.avatar.url,
-#  }
-# profiles_to_follow_list.append(profile_item)
-# return JsonResponse({'profile_data': profiles_to_follow_list})
