@@ -22,7 +22,7 @@
                         {% if not profile in group.users.all %}
                         <a href="#" class="btn btn-outline-dark ms-auto btn-sm">Join Group</a>
                         {% else %}
-                        <a href="#" class="btn btn-outline-dark ms-auto btn-sm">Enter</a>
+                        <a href="{% url 'groups:view-group' group.pk %}" class="btn btn-outline-dark ms-auto btn-sm">Enter</a>
                         {% endif %}
                     </p>
                     </div>

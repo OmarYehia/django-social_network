@@ -52,6 +52,10 @@ class ViewGroup(View):
         user = request.user
         profile = Profile.objects.get(user=user)
         group = Group.objects.get(pk=pk)
+
+        if not profile in group.users.all():
+            return redirect('groups:groups-index')
+
         group_posts = Post.objects.filter(group=group)
 
         context = {

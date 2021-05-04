@@ -7,10 +7,10 @@
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
          {% if user %}
     <ul class="navbar-nav w-100 d-flex">
-      {% comment %} <li class="nav-item ms-auto">
-        <a class="nav-link" href="{% url 'profiles:my-profile-view' user.username %}">{{ profile.first_name }} {{ profile.last_name }}</a>
-      </li> {% endcomment %}
       <li class="nav-item ms-auto me-3 inbox-icon-container">
+        <a class="nav-link inbox-icon" href="{% url 'groups:groups-index' %}"><i class="fas fa-users"></i></a>
+      </li>
+      <li class="nav-item me-3 inbox-icon-container">
         <a class="nav-link inbox-icon" href="{% url 'messages:inbox' %}"><i class="fas fa-envelope"></i></a>
       </li>
       <li class="nav-item dropdown me-5 pe-3 ">
