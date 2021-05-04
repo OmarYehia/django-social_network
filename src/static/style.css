@@ -26,7 +26,8 @@
 .success-field,
 .stat-field,
 .comment-body,
-.message-time {
+.message-time,
+.group-stats {
     font-size: 14px;
 }
 

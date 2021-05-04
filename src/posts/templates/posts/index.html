@@ -12,17 +12,19 @@
             <div class="post-info p-3 d-flex justify-content-between">
                 <div class="d-flex align-items-center">
                     <img style="width: 40px; height: 40px;" src="/media/{{ post.author.avatar }}" class="rounded-circle">
-                    <p class=" card-text p-2 text-black-50 created-text" >{{ post.author }} - {{ post.updated_at|timesince }} ago
+                    <p class=" card-text p-2 text-black-50 created-text" ><a href="{% url 'profiles:my-profile-view' post.author.user %}">@{{ post.author }}</a> - {{ post.updated_at|timesince }} ago
                     <br>
                     {% if post.group %}
-                    Group ({{ post.group.name }})
+                    Group (<a href="{% url 'groups:view-group' post.group.pk %}">{{ post.group.name }}</a>)
                     {% endif %}
                     </p>
                 </div>
                 <div>
                     {% if post.author == profile %}
-                        <a href="{% url 'posts:post-update' post.id %}" class="btn btn-outline-dark">Update</a>
-                        <a href="{% url 'posts:post-delete' post.id %}" class="btn btn-outline-dark">Delete</a>
+                    <a href="{% url 'posts:post-update' post.id %}" class="btn btn-outline-dark">Update</a>
+                    {% endif %}
+                    {% if post.group.owner == profile or post.author == profile %}
+                    <a href="{% url 'posts:post-delete' post.id %}" class="btn btn-outline-dark">Delete</a>
                     {% endif %}
                 </div>
             </div>
@@ -61,7 +63,7 @@
                                 <div class="card-body">
                                     <div class="d-flex mb-2 border-bottom">
                                         <img style="width: 32px; height: 32px;" src="/media/{{ comment.user.avatar }}" class="rounded-circle">
-                                        <p class=" card-text p-2 text-black-50 created-text" >{{ comment.user }} - {{ comment.created_at|timesince }} ago</p>
+                                        <p class=" card-text p-2 text-black-50 created-text" ><a href="{% url 'profiles:my-profile-view' comment.user %}">@{{ comment.user }}</a> - {{ comment.created_at|timesince }} ago</p>
                                         {% if comment.user == profile %}
                                         <a href="{% url 'posts:comment-delete' comment.id %}" class="btn text-danger ms-auto border-0">Delete <i class="fas fa-times-circle"></i></a>
                                         {% endif %}

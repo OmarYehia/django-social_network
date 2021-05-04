@@ -99,7 +99,8 @@ class PostDeleteView(DeleteView):
     def get_object(self, *args, **kwargs):
         pk = self.kwargs.get('pk')
         post = Post.objects.get(pk=pk)
-        if not post.author.user == self.request.user:
+
+        if not post.author.user == self.request.user and not post.group.owner.user == self.request.user:
             messages.warning(
                 self.request, 'You can delete only your own posts.')
 

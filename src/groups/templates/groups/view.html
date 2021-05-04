@@ -12,7 +12,7 @@
             <div class="post-info p-3 d-flex justify-content-between">
                 <div class="d-flex">
                     <img style="width: 40px; height: 40px;" src="/media/{{ post.author.avatar }}" class="rounded-circle">
-                    <p class=" card-text p-2 text-black-50 created-text" >{{ post.author }} - {{ post.updated_at|timesince }} ago</p>
+                    <p class=" card-text p-2 text-black-50 created-text" ><a href="{% url 'profiles:my-profile-view' post.author.user %}">@{{ post.author }}</a> - {{ post.updated_at|timesince }} ago</p>
                 </div>
                 <div>
                     {% if post.author == profile %}
@@ -58,7 +58,7 @@
                                 <div class="card-body">
                                     <div class="d-flex mb-2 border-bottom">
                                         <img style="width: 32px; height: 32px;" src="/media/{{ comment.user.avatar }}" class="rounded-circle">
-                                        <p class=" card-text p-2 text-black-50 created-text" >{{ comment.user }} - {{ comment.created_at|timesince }} ago</p>
+                                        <p class=" card-text p-2 text-black-50 created-text" ><a href="{% url 'profiles:my-profile-view' comment.user %}">@{{ comment.user }}</a> - {{ comment.created_at|timesince }} ago</p>
                                         {% if comment.user == profile %}
                                         <a href="{% url 'posts:comment-delete' comment.id %}" class="btn text-danger ms-auto border-0">Delete <i class="fas fa-times-circle"></i></a>
                                         {% endif %}
@@ -92,14 +92,24 @@
         </div>
         <!-- Post Form -->
         <div class="col-5 " style="z-index: 4;">
-            <div class="sticky-top shadow">
+            <div class="sticky-top">
+                <div class="card text-dark shadow-sm mb-3" >
+                    <div class="card-header">Group Overview</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ group.name }}</h5>
+                        <p class="card-text">{{ group.overview }}</p>
+                        <p class="card-text m-0 text-black-50 group-stats">Total members: {{ group.users.all.count }}</p>
+                        <p class="card-text m-0 text-black-50 group-stats">Total posts: {{ group.post_set.all.count }}</p>
+                        <p class="card-text m-0 text-black-50 group-stats">Group owner: <a href="{% url 'profiles:my-profile-view' group.owner.user %}">@{{ group.owner }}</a></p>
+                    </div>
+                </div>
                 {{ post_form.non_field_errors }}
                 {% if post_added %}
                 <div class="alert alert-success success-field">
                     <span>Post added successfully!</span>
                 </div>
                 {% endif %}
-                <form class="create-post-form border rounded p-3 sticky-top" action="" method="POST" enctype="multipart/form-data">
+                <form class="create-post-form border shadow-sm rounded p-3" action="" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="{{ post_form.content.id_for_label }}" class="form-label">Post Content:</label>
