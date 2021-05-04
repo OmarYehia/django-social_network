@@ -34,8 +34,9 @@ all profiles
                   <button class="btn btn-outline-secondary disabled">Waiting for approval</button>
                 {% endif %}
                         {% if request.user in item.friends.all %}
-                 <form action="" method="POST">
+                 <form action="{% url 'profiles:remove-friend' %}" method="POST">
                     {% csrf_token %}
+                     <input type="hidden" name="profile_pk" value="{{ item.pk }}"/>
 
                       <button type="submit" class="btn btn-outline-danger">Remove from friends</button>
 

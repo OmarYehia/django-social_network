@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from .forms import ProfileModelForm
 from django.views.generic import UpdateView
 from django.urls import reverse_lazy
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Q
 
 
 @login_required(login_url="/login")
@@ -86,6 +86,23 @@ def send_invitation(request):
         return redirect(request.META.get('HTTP_REFERER'))
 
     return redirect('/posts')
+
+
+def remove_from_fiends(request):
+    if request.method == 'POST':
+        pk = request.POST.get('profile_pk')
+        user = request.user
+        sender = Profile.objects.get(user=user)
+        receiver = Profile.objects.get(pk=pk)
+
+        rel = Relationship.objects.get(
+            (Q(sender=sender) & Q(receiver=receiver)) | Q(sender=receiver) & Q(receiver=sender)
+        )
+        rel.delete()
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    return redirect('/posts')
+
 
 
 class ProfileUpdateView(UpdateView):
