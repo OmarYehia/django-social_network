@@ -111,3 +111,27 @@ class JoinGroup(View):
         group.users.add(user_profile)
 
         return redirect('groups:view-group', pk=pk)
+
+
+class DeleteGroup(View):
+    def get(self, request, pk, *args, **kwargs):
+        group = Group.objects.get(pk=pk)
+        user = request.user
+        user_profile = Profile.objects.get(user=user)
+
+        if not user_profile == group.owner:
+            return redirect('groups:view-group', pk=pk)
+
+        return render(request, 'groups/confirm_delete.html', {'group': group})
+
+    def post(self, request, pk, *args, **kwargs):
+        group = Group.objects.get(pk=pk)
+        user = request.user
+        user_profile = Profile.objects.get(user=user)
+
+        if not user_profile == group.owner:
+            return redirect('groups:view-group', pk=pk)
+
+        group.delete()
+
+        return redirect('groups:groups-index')

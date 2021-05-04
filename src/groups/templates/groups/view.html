@@ -96,7 +96,12 @@
                 <div class="card text-dark shadow-sm mb-3" >
                     <div class="card-header">Group Overview</div>
                     <div class="card-body">
-                        <h5 class="card-title">{{ group.name }}</h5>
+                        <h5 class="card-title d-flex align-items-center">
+                        {{ group.name }}
+                        {% if group.owner == profile %}
+                        <a href="{% url 'groups:delete-group' group.pk %}" class="btn btn-danger ms-auto btn-sm">Delete</a>
+                        {% endif %}
+                        </h5>
                         <p class="card-text">{{ group.overview }}</p>
                         <p class="card-text m-0 text-black-50 group-stats">Total members: {{ group.users.all.count }}</p>
                         <p class="card-text m-0 text-black-50 group-stats">Total posts: {{ group.post_set.all.count }}</p>
