@@ -19,9 +19,7 @@ My invites
                   <div class="col-9">
                       <h3>{{ item.user }}</h3>
                       <p>{{ item.bio }}</p>
-                      <a href="">
-                          <button class="btn  btn-outline-primary mb-3">See profile</button>
-                      </a>
+                      <a href="{% url 'profiles:my-profile-view' item.user %}" class="btn  btn-outline-primary mb-3">See profile</a>
                       <form action="{% url 'profiles:accept-invite' request.user.username %}" method="POST">
                           {% csrf_token %}
                           <input type="hidden" name="profile_pk" value="{{ item.pk }}">
