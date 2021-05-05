@@ -24,6 +24,21 @@ class ListGroups(View):
 
         return render(request, 'groups/groups.html', context)
 
+    def post(self, request, *args, **kwargs):
+        form = GroupForm(request.POST)
+        logged_in_user_profile = Profile.objects.get(user=request.user)
+
+        if not form.is_valid():
+            return redirect('groups:groups-index')
+
+        group_name = form.cleaned_data.get('name')
+
+        try:
+            groups = Group.objects.filter(name__icontains=group_name)
+            return render(request, 'groups/groups.html', {'groups': groups})
+        except:
+            return render(request, 'groups/groups.html')
+
 
 class CreateGroup(View):
     def get(self, request, *args, **kwargs):
