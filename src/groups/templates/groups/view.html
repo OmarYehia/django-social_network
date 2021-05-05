@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% comment %} {% load profanity %} {% endcomment %}
+{% block title %}{{ group.name }}{% endblock title %}
+
+{% block content %}
+<div class="main-section" >
+    <div class="row" style="z-index: -2;">
+        <!-- Post List -->
+        <div class="posts-list col-7">
+            {% for post in posts %}
+            <div class="card w-100 mb-3 shadow-sm">
+            <div class="post-info p-3 d-flex justify-content-between">
+                <div class="d-flex">
+                    <img style="width: 40px; height: 40px;" src="/media/{{ post.author.avatar }}" class="rounded-circle">
+                    <p class=" card-text p-2 text-black-50 created-text" ><a href="{% url 'profiles:my-profile-view' post.author.user %}">@{{ post.author }}</a> - {{ post.updated_at|timesince }} ago</p>
+                </div>
+                <div>
+                    {% if post.author == profile %}
+                        <a href="{% url 'posts:post-update' post.id %}" class="btn btn-outline-dark">Update</a>
+                    {% endif %}
+                    {% if group.owner == profile or post.author == profile %}
+                        <a href="{% url 'posts:post-delete' post.id %}" class="btn btn-outline-dark">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+                {% if post.image %}
+                <div style="max-height: 300px;">
+                    <img style="width: 100%; height: 300px; object-fit: cover;" src="/media/{{ post.image }}" class="card-img-top">
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <p class="card-text">{{ post.content }}</p>
+                    <div class="like-form d-flex justify-content-between align-items-center">
+                        <div class="stat-field">
+                            <span>{{ post.get_total_likes }} Likes - {{ post.comments.all.count }} comments</span>
+                        </div>
+                        <form action="{% url 'posts:like-unlike' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+                            {% if profile in post.likes.all %}
+                                <button type="submit" class="btn btn-dark py-1 px-4" name="submit_comment_form">
+                                    <i class="fas fa-thumbs-down"></i>&nbsp;Unlike
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-outline-dark py-1 px-4" name="submit_comment_form"
+                                {% if profile == post.author %}disabled{% endif %}
+                                ><i class="fas fa-thumbs-up"></i>&nbsp;Like</button>
+                            {% endif %}
+                                
+                        </form>
+                    </div>
+                    <!-- Comment List -->
+                    <h4><i class="fas fa-comment-dots"></i> Comments</h4>
+                    <button onclick="toggleComment(this)" class="btn btn-outline-dark mb-2 show-comments" id="show-comments-{{ post.id }}">Show Comments</button>
+                    <div class="comment-list mt-3 border-top py-3 not-visible">
+                        {% for comment in post.comments.all %}
+                            <div class="card mb-2 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex mb-2 border-bottom">
+                                        <img style="width: 32px; height: 32px;" src="/media/{{ comment.user.avatar }}" class="rounded-circle">
+                                        <p class=" card-text p-2 text-black-50 created-text" ><a href="{% url 'profiles:my-profile-view' comment.user %}">@{{ comment.user }}</a> - {{ comment.created_at|timesince }} ago</p>
+                                        {% if comment.user == profile %}
+                                        <a href="{% url 'posts:comment-delete' comment.id %}" class="btn text-danger ms-auto border-0">Delete <i class="fas fa-times-circle"></i></a>
+                                        {% endif %}
+                                    </div>
+                                    <p class="card-text ms-2 comment-body">{{ comment.body }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <!-- Comment Form -->
+                    <div class="comment-form border-top mt-3 shadow-sm">
+                        {{ comment_form.non_field_errors }}
+                        <form class="create-comment-form p-2" action="" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="post_id" value={{ post.id }} />
+                            <div class="mb-3">
+                                <textarea class="form-control" name="body" required placeholder="Add a comment..." maxlength="500"></textarea>
+                                <div class="text-danger p-1 error-field">
+                                {{ comment_form.body.errors }}
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-outline-dark py-1 px-4" name="submit_comment_form">
+                                Comment&nbsp;
+                                <i class="far fa-comment-dots"></i>
+                            </button>
+                        </form>  
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- Post Form -->
+        <div class="col-5 " style="z-index: 4;">
+            <div class="sticky-top">
+                <div class="card text-dark shadow-sm mb-3" >
+                    <div class="card-header">Group Overview</div>
+                    <div class="card-body">
+                        <h5 class="card-title d-flex align-items-center">
+                        {{ group.name }}
+                        {% if group.owner == profile %}
+                        <a href="{% url 'groups:delete-group' group.pk %}" class="btn btn-danger ms-auto btn-sm">Delete</a>
+                        {% endif %}
+                        </h5>
+                        <p class="card-text">{{ group.overview }}</p>
+                        <p class="card-text m-0 text-black-50 group-stats">Total members: {{ group.users.all.count }}</p>
+                        <p class="card-text m-0 text-black-50 group-stats">Total posts: {{ group.post_set.all.count }}</p>
+                        <p class="card-text m-0 text-black-50 group-stats">Group owner: <a href="{% url 'profiles:my-profile-view' group.owner.user %}">@{{ group.owner }}</a></p>
+                    </div>
+                </div>
+                {{ post_form.non_field_errors }}
+                {% if post_added %}
+                <div class="alert alert-success success-field">
+                    <span>Post added successfully!</span>
+                </div>
+                {% endif %}
+                <form class="create-post-form border shadow-sm rounded p-3" action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ post_form.content.id_for_label }}" class="form-label">Post Content:</label>
+                        <textarea class="form-control" name="content"></textarea>
+                        <div class="text-danger p-1 error-field">
+                        {{ post_form.content.errors }}
+                        </div>
+                        
+                    </div>
+                    <div class="mb-3">
+                        
+                        <label for="{{ post_form.image.id_for_label }}" class="form-label">Post image:</label>
+                        <input type="file" class="form-control" name="image" />
+                        <div class="text-danger p-1 error-field">
+                        {{ post_form.image.errors }}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success" name="submit_post_form">Add Post</button>
+                </form>  
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

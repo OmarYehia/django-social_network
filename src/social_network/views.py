@@ -1,8 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 
 def index(request):
-    context = {
-        'user': request.user
-    }
-    return render(request, 'main/index.html', context)
+    if not request.user.is_authenticated:
+        return render(request, 'main/index.html', {})
+
+    return redirect("posts:posts-index")

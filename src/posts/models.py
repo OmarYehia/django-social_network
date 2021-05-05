@@ -3,6 +3,7 @@ from django.core.validators import FileExtensionValidator
 from profiles.models import Profile
 from django.contrib.auth.models import User
 from profanity.validators import validate_is_profane
+from groups.models import Group
 # Create your models here.
 
 
@@ -16,6 +17,8 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name='posts')
+    group = models.ForeignKey(
+        Group, default=None, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.pk)
@@ -71,3 +74,15 @@ class Notifications(models.Model):
     comment = models.ForeignKey('Comment', on_delete=models.CASCADE, related_name='+', blank=True, null=True)
     date = models.DateTimeField(auto_now=True)
     user_has_seen = models.BooleanField(default=False)
+    
+class CustomProfanity(models.Model):
+    class Meta:
+        verbose_name = 'Custom Profanity Word'
+
+    added_by = models.ForeignKey(
+        Profile, on_delete=models.SET_NULL, blank=True, null=True)
+    bad_word = models.CharField(max_length=60)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.bad_word)

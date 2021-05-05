@@ -1,52 +1,157 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Profile, Relationship
 from django.contrib.auth.models import User
 from .forms import ProfileModelForm
 from django.views.generic import UpdateView
 from django.urls import reverse_lazy
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Q
 
 
 @login_required(login_url="/login")
-def my_profile_view(request, username):
-    user = User.objects.get(username=username)
-    profile = Profile.objects.get(user=user)
-    form = ProfileModelForm(request.POST or None,
-                            request.FILES or None, instance=profile)
-    confirm = False
-
-    if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            confirm = True
-
-    context = {
-        'profile': profile,
-        'form': form,
-        'confirm': confirm
-    }
-    return render(request, 'profiles/myprofile.html', context)
-
-
 def invites_received_view(request, slug):
     profile = Profile.objects.get(slug=slug)
     qs = Relationship.objects.invitaions_received(profile)
+    result = list(map(lambda x: x.sender, qs))
+    is_empty = False
+    if len(result) == 0:
+        is_empty = True
 
     context = {
-        'qs': qs
+        'qs': result,
+        'is_empty': is_empty
     }
+    print(is_empty)
     return render(request, 'profiles/my_invites.html', context)
 
 
+@login_required(login_url="/login")
+def accept_invitation(request, slug):
+    if request.method == 'POST':
+        pk = request.POST.get('profile_pk')
+        sender = Profile.objects.get(pk=pk)
+        receiver = Profile.objects.get(user=request.user)
+
+        rel = get_object_or_404(Relationship, sender=sender, receiver=receiver)
+
+        if rel.status == 'send':
+            rel.status = 'accepted'
+            rel.save()
+            return redirect(request.META.get('HTTP_REFERER'))
+
+    return redirect('/posts')
+
+
+@login_required(login_url="/login")
+def reject_invitation(request, slug):
+    if request.method == 'POST':
+        pk = request.POST.get('profile_pk')
+        sender = Profile.objects.get(pk=pk)
+        receiver = Profile.objects.get(user=request.user)
+
+        rel = get_object_or_404(Relationship, sender=sender, receiver=receiver)
+        rel.delete()
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    return redirect('/posts')
+
+
+@login_required(login_url="/login")
 def profiles_list_view(request, slug):
-    user = slug
-    qs = Profile.objects.invitaions_received(user)
+    user = User.objects.get(username=slug)
+    qs = Profile.objects.get_all_profiles(user)
+    profile = Profile.objects.get(user=user)
+    rel_r = Relationship.objects.filter(sender=profile)
+    rel_s = Relationship.objects.filter(receiver=profile)
+    rel_receiver = []
+    rel_sender = []
+    for item in rel_r:
+        rel_receiver.append(item.receiver.user)
+    for item in rel_s:
+        rel_sender.append(item.sender.user)
+    is_empty = False
+    if len(qs) == 0:
+        is_empty = True
+
+    context = {
+        'qs': qs,
+        'rel_sender': rel_sender,
+        'rel_receiver': rel_receiver,
+        'is_empty': is_empty
+    }
+    return render(request, 'profiles/profile_list.html', context)
+
+
+@login_required(login_url="/login")
+def profiles_detail_view(request, slug):
+    user = Profile.objects.get(user=request.user)
+    profile = Profile.objects.get(slug=slug)
+    rel_r = Relationship.objects.filter(sender=user)
+    rel_s = Relationship.objects.filter(receiver=user)
+    rel_receiver = []
+    rel_sender = []
+    for item in rel_r:
+        rel_receiver.append(item.receiver.user)
+    for item in rel_s:
+        rel_sender.append(item.sender.user)
+    posts = profile.get_all_author_posts
+    print(request.user)
+    is_empty = False
+    if len(posts) == 0:
+        is_empty = True
+
+    context = {
+        'user': user,
+        'profile': profile,
+        'posts': posts,
+        'rel_sender': rel_sender,
+        'rel_receiver': rel_receiver,
+        'is_empty': is_empty
+    }
+    return render(request, 'profiles/detail.html', context)
+
+
+@login_required(login_url="/login")
+def invite_profiles_list_view(request, slug):
+    user = User.objects.get(username=slug)
+    qs = Profile.objects.get_all_profiles_to_invite(user)
 
     context = {
         'qs': qs
     }
-    return render(request, 'profiles/profile_list.html', context)
+    return render(request, 'profiles/to_invite_list.html', context)
+
+
+@login_required(login_url="/login")
+def send_invitation(request):
+    if request.method == 'POST':
+        pk = request.POST.get('profile_pk')
+        user = request.user
+        sender = Profile.objects.get(user=user)
+        receiver = Profile.objects.get(pk=pk)
+
+        rel = Relationship.objects.create(sender=sender, receiver=receiver, status='send')
+
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    return redirect('/posts')
+
+
+@login_required(login_url="/login")
+def remove_from_fiends(request):
+    if request.method == 'POST':
+        pk = request.POST.get('profile_pk')
+        user = request.user
+        sender = Profile.objects.get(user=user)
+        receiver = Profile.objects.get(pk=pk)
+
+        rel = Relationship.objects.get(
+            (Q(sender=sender) & Q(receiver=receiver)) | Q(sender=receiver) & Q(receiver=sender)
+        )
+        rel.delete()
+        return redirect(request.META.get('HTTP_REFERER'))
+
+    return redirect('/posts')
 
 
 class ProfileUpdateView(UpdateView):
@@ -68,26 +173,5 @@ class ProfileUpdateView(UpdateView):
             form.add_error(None, 'You can update only your own profile.')
             return super().form_invalid(form)
 
-# @login_required(login_url="/login")
-# class MyProfileView(TemplateView):
-#    template_name = 'profiles/my_profile.html'
 
-
-# my_profile_view = login_required(MyProfileView.as_view(),login_url="/login" )
-
-
-# @login_required(login_url="/login")
-# class MyProfileData(View):
-#   def get(self, *args, **kwargs):
-#      profile = Profile.objects.get(user=self.request.user)
-#     qs = profile.get_proposals_for_following()
-#     profiles_to_follow_list = []
-#    for user in qs:
-#       profile = Profile.objects.get(user__username=user.username)
-#      profile_item = {
-#         'id': profile.id,
-#        "user": profile.user.username,
-#       'avatar': profile.avatar.url,
-#  }
-# profiles_to_follow_list.append(profile_item)
-# return JsonResponse({'profile_data': profiles_to_follow_list})
+profile_update_view = login_required(ProfileUpdateView.as_view(), login_url="/login")

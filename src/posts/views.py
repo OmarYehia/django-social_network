@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect
+<<<<<<< HEAD
 from .models import Post, Like, Comment, Notifications
+=======
+from .models import Post, Like, Comment, CustomProfanity
+>>>>>>> 06ca79d494b4ed2f8afb79404b5b1e48ab09e9c3
 from profiles.models import Profile
 from .forms import PostForm, CommentForm
 from django.db.models import Q
@@ -7,6 +11,7 @@ from django.views.generic import DeleteView, UpdateView, View
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponse
+from better_profanity import profanity
 # Create your views here.
 
 
@@ -19,40 +24,62 @@ def posts_index(request):
         friend_profile = Profile.objects.get(user=friend)
         friend_profiles.append(friend_profile)
 
+    groups = profile.groups.all()
+
     posts = Post.objects.filter(
         Q(author=profile) |
-        Q(author__in=friend_profiles))
-    # get groups posts
+        Q(author__in=friend_profiles) |
+        Q(group__in=groups)
+    )
 
     post_form = PostForm()
     comment_form = CommentForm()
     post_added = False
 
+    # Custom profanity words
+    custom_badwords = CustomProfanity.objects.values_list(
+        'bad_word', flat=True)
+    profanity.load_censor_words(custom_badwords)
+
     if 'submit_post_form' in request.POST:
         post_form = PostForm(request.POST, request.FILES)
-        if post_form.is_valid():
+        valid = post_form.is_valid()
+
+        if profanity.contains_profanity(post_form.cleaned_data.get('content')):
+            custom_profanity_error = 'Please remove any profanity/swear words. (Added by an admin. Contact an admin if you believe this is wrong.)'
+            valid = False
+            post_form.errors['content'] = custom_profanity_error
+
+        if valid:
             post_instance = post_form.save(commit=False)
             post_instance.author = profile
             post_instance.save()
             post_added = True
-            return redirect('posts:posts-index')
+            return redirect(request.headers.get('Referer'))
 
     elif 'submit_comment_form' in request.POST:
         comment_form = CommentForm(request.POST)
-        if comment_form.is_valid():
+        valid = comment_form.is_valid()
+
+        if profanity.contains_profanity(comment_form.cleaned_data.get('body')):
+            custom_profanity_error = 'Please remove any profanity/swear words. (Added by an admin. Contact an admin if you believe this is wrong.)'
+            valid = False
+            comment_form.errors['body'] = custom_profanity_error
+
+        if valid:
             post_id = request.POST.get("post_id")
             comment_instance = comment_form.save(commit=False)
             comment_instance.user = profile
             comment_instance.post = Post.objects.get(id=post_id)
             comment_instance.save()
-            return redirect('posts:posts-index')
+            return redirect(request.headers.get('Referer'))
 
     context = {
         'posts': posts,
         'profile': profile,
         'post_form': post_form,
         'comment_form': comment_form,
-        'post_added': post_added
+        'post_added': post_added,
     }
 
     return render(request, 'posts/index.html', context)
@@ -85,7 +112,7 @@ def like_unlike_post(request):
         post.save()
         like.save()
 
-    return redirect('posts:posts-index')
+    return redirect(request.headers.get('Referer'))
 
 
 class PostDeleteView(DeleteView):
@@ -96,7 +123,8 @@ class PostDeleteView(DeleteView):
     def get_object(self, *args, **kwargs):
         pk = self.kwargs.get('pk')
         post = Post.objects.get(pk=pk)
-        if not post.author.user == self.request.user:
+
+        if not post.author.user == self.request.user and not post.group.owner.user == self.request.user:
             messages.warning(
                 self.request, 'You can delete only your own posts.')
 
