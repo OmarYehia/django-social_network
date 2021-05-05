@@ -3,7 +3,7 @@ from .models import Post, Like, Comment, CustomProfanity
 from profiles.models import Profile
 from .forms import PostForm, CommentForm
 from django.db.models import Q
-from django.views.generic import DeleteView, UpdateView
+from django.views.generic import DeleteView, UpdateView, View
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponse
@@ -148,4 +148,60 @@ def CommentDelete(request, pk):
     if comment.user == logged_user_profile:
         comment.delete()
 
-    return redirect('posts:posts-index')
+    return redirect(request.headers.get('Referer'))
+
+
+class ViewPost(View):
+    def get(self, request, pk, *args, **kwargs):
+        logged_in_user_profile = Profile.objects.get(user=request.user)
+        form = CommentForm()
+
+        try:
+            post = Post.objects.get(pk=pk)
+
+            context = {
+                'profile': logged_in_user_profile,
+                'post': post,
+                'form': form
+            }
+
+            return render(request, 'posts/view_post.html', context)
+        except:
+            return render(request, 'main/not_found.html')
+
+    def post(self, request, pk, *args, **kwargs):
+        profile = Profile.objects.get(user=request.user)
+
+        # Custom profanity words
+        custom_badwords = CustomProfanity.objects.values_list(
+            'bad_word', flat=True)
+        profanity.load_censor_words(custom_badwords)
+
+        form = CommentForm(request.POST)
+
+        valid = form.is_valid()
+
+        if profanity.contains_profanity(form.cleaned_data.get('body')):
+            custom_profanity_error = 'Please remove any profanity/swear words. (Added by an admin. Contact an admin if you believe this is wrong.)'
+            valid = False
+            form.errors['body'] = custom_profanity_error
+
+        try:
+            post = Post.objects.get(pk=pk)
+        except:
+            return redirect(request, 'main/not_found.html')
+
+        if valid:
+            comment_instance = form.save(commit=False)
+            comment_instance.user = profile
+            post = Post.objects.get(pk=pk)
+            comment_instance.post = post
+            comment_instance.save()
+            return redirect(request.headers.get('Referer'))
+        else:
+            context = {
+                'post': post,
+                'profile': profile,
+                'form': form
+            }
+            return render(request, 'posts/view_post.html', context)
