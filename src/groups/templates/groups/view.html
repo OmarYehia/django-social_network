@@ -103,7 +103,7 @@
                         {% endif %}
                         </h5>
                         <p class="card-text">{{ group.overview }}</p>
-                        <p class="card-text m-0 text-black-50 group-stats">Total members: {{ group.users.all.count }}</p>
+                        <p class="card-text m-0 text-black-50 group-stats">Total members: {{ group.users.all.count }}   <a href="{% url 'groups:group-members' group.pk %}">View All</a></p>
                         <p class="card-text m-0 text-black-50 group-stats">Total posts: {{ group.post_set.all.count }}</p>
                         <p class="card-text m-0 text-black-50 group-stats">Group owner: <a href="{% url 'profiles:my-profile-view' group.owner.user %}">@{{ group.owner }}</a></p>
                     </div>

@@ -173,3 +173,35 @@ class DeleteGroup(View):
         group.delete()
 
         return redirect('groups:groups-index')
+
+
+class ViewGroupMembers(View):
+    def get(self, request, pk, *args, **kwargs):
+        group = Group.objects.get(pk=pk)
+        group_members = group.users.all().exclude(user=group.owner.user)
+        logged_in_user_profile = Profile.objects.get(user=request.user)
+
+        context = {
+            'members': group_members,
+            'profile': logged_in_user_profile,
+            'group': group
+        }
+
+        return render(request, 'groups/view_members.html', context)
+
+
+class RemoveMember(View):
+    def get(self, request, pk, id, *args, **kwargs):
+        group = Group.objects.get(pk=pk)
+        logged_in_user_profile = Profile.objects.get(user=request.user)
+        try:
+            member_to_delete = Profile.objects.get(pk=id)
+            group_members = group.users.all().exclude(user=group.owner.user)
+
+            if not logged_in_user_profile == group.owner or not member_to_delete in group_members:
+                return redirect('groups:group-members', pk=group.pk)
+
+            member_to_delete.groups.remove(group)
+            return redirect('groups:group-members', pk=group.pk)
+        except:
+            return redirect('groups:group-members', pk=group.pk)
