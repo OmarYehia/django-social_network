@@ -26,7 +26,8 @@
 .success-field,
 .stat-field,
 .comment-body,
-.message-time {
+.message-time,
+.group-stats {
     font-size: 14px;
 }
 
@@ -65,6 +66,7 @@
     width: 33%;
 }
 
+<<<<<<< HEAD
 
 .notification-badge {
     transition: 0.3s;
@@ -124,3 +126,5 @@
     transition: 0.3s;
     cursor: pointer;
 }
+=======
+>>>>>>> dc9502ab51d33bcc3818b2b02e412998781d7b31

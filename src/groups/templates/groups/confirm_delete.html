@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete group{% endblock title %}
+
+{% block content %}
+<div class="container w-50">   
+    <div class="card">
+        <div class="card-header text-center">
+            Are you sure that you want to Delete this group?
+        </div>
+        <div class="card-body text-center">
+            <h5 class="card-title">{{ group.name }}</h5>
+            <p class="card-text">{{ group.overview }}</p>
+            <p class="card-text m-0 text-black-50 group-stats">Total members: {{ group.users.all.count }}</p>
+            <p class="card-text m-0 text-black-50 group-stats">Total posts: {{ group.post_set.all.count }}</p>
+            <form action="" method="POST" class="mt-4 mb-2 d-flex">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger ms-auto me-auto">Delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

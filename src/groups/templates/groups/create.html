@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Group{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 mb-3 d-flex">
+            <a href="{% url 'groups:groups-index' %}" class="btn btn-outline-dark ms-auto">Back to your groups</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h3>Create a new group</h3>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center">
+            <div class="comment-form border p-5 mt-3 shadow w-50">
+                {{ form.non_field_errors }}
+                <form class="create-comment-form p-2" action="" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label>Group name</label>
+                        <input class="form-control" name="name" required placeholder="" maxlength="500"></input>
+                        <div class="text-danger p-1 error-field">
+                        {{ form.name.errors }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label>Group overview</label>
+                        <textarea class="form-control" name="overview" maxlength="500" rows=10></textarea>
+                        <div class="text-danger p-1 error-field">
+                        {{ form.overview.errors }}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success py-1 px-4" name="submit_form">
+                        Create Group
+                    </button>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

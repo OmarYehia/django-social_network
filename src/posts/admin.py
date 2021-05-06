@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Comment, Like, Notifications
+from .models import Post, Comment, Like, Notifications, CustomProfanity
 # Register your models here.
 
 
@@ -16,7 +16,12 @@ class LikeAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'post', 'value', 'updated_at', 'created_at')
 
 
+class ProfanityAdmin(admin.ModelAdmin):
+    list_display = ('id', 'bad_word', 'added_by', 'created_at')
+
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Like, LikeAdmin)
 admin.site.register(Notifications)
+admin.site.register(CustomProfanity, ProfanityAdmin)

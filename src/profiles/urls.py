@@ -3,12 +3,14 @@ from . import views
 
 app_name = 'profiles'
 urlpatterns = [
-    path("<str:username>", views.my_profile_view, name="my-profile-view"),
-    path('<slug>/update/', views.ProfileUpdateView.as_view(), name="profile-update"),
+    path("<slug>", views.profiles_detail_view, name="my-profile-view"),
+    path('<slug>/update/', views.profile_update_view , name="profile-update"),
     path('<slug>/my-invites/', views.invites_received_view, name='my-invites-view'),
     path('<slug>/all-profiles/', views.profiles_list_view, name='all-profiles-view'),
-
-    #path('my/', views.my_profile_view, name='my-profile-view'),
-    #path('my-profile-json/', views.MyProfileData.as_view(), name='my-profile-json')
+    path('<slug>/to-invite/', views.invite_profiles_list_view, name='to-invite-view'),
+    path('send-invite/', views.send_invitation, name='send-invitation'),
+    path('remove-friend/', views.remove_from_fiends, name='remove-friend'),
+    path('<slug>/my-invites/accept', views.accept_invitation, name='accept-invite'),
+    path('<slug>/my-invites/reject', views.reject_invitation, name='reject-invite'),
 
 ]
