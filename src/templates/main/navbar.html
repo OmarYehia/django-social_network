@@ -6,15 +6,15 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
          {% if user.is_authenticated %}
-    <ul class="navbar-nav w-75 d-flex">
+    <ul class="navbar-nav w-100 d-flex">
       <li class="nav-item ms-auto me-3 inbox-icon-container">
+        <div class="nav-link" >{% show_notifications %}</div>
+      </li>
+      <li class="nav-item  me-3 inbox-icon-container">
         <a class="nav-link inbox-icon" href="{% url 'groups:groups-index' %}"><i class="fas fa-users"></i></a>
       </li>
       <li class="nav-item me-3 inbox-icon-container">
         <a class="nav-link inbox-icon" href="{% url 'messages:inbox' %}"><i class="fas fa-envelope"></i></a>
-      </li>
-      <li>
-        <div class="nav-link" >{% show_notifications %}</div>
       </li>
       <li class="nav-item dropdown me-5 pe-3 ">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
