@@ -112,34 +112,102 @@ def like_unlike_post(request):
 
 
 class PostDeleteView(DeleteView):
-    model = Post
-    template_name = 'posts/confirm_delete.html'
-    success_url = reverse_lazy('posts:posts-index')
+    def get(self, request, pk, *args, **kwargs):
+        try:
+            post = Post.objects.get(pk=pk)
+        except:
+            return render(request, 'main/not_found.html')
 
-    def get_object(self, *args, **kwargs):
-        pk = self.kwargs.get('pk')
-        post = Post.objects.get(pk=pk)
-
-        if not post.author.user == self.request.user and not post.group.owner.user == self.request.user:
+        if post.group:
+            if not post.group.owner.user == self.request.user and not post.author.user == self.request.user:
+                messages.warning(
+                    request, 'You can only delete your own posts or posts in a group you own.')
+        elif not post.author.user == self.request.user:
             messages.warning(
-                self.request, 'You can delete only your own posts.')
+                request, 'You can only delete your own posts.')
 
-        return post
+        return render(request, 'posts/confirm_delete.html')
+
+    def post(self, request, pk, *args, **kwargs):
+        try:
+            post = Post.objects.get(pk=pk)
+            post.delete()
+            return redirect(request.POST.get('referer'))
+        except:
+            return render(request, 'main/not_found.html')
 
 
 class PostUpdateView(UpdateView):
-    model = Post
-    form_class = PostForm
-    template_name = 'posts/update.html'
-    success_url = reverse_lazy('posts:posts-index')
+    # model = Post
+    # form_class = PostForm
+    # template_name = 'posts/update.html'
+    # success_url = reverse_lazy('posts:posts-index')
 
-    def form_valid(self, form):
-        profile = Profile.objects.get(user=self.request.user)
-        if form.instance.author == profile:
-            return super().form_valid(form)
-        else:
-            form.add_error(None, 'You can update only your own posts.')
-            return super().form_invalid(form)
+    # def form_valid(self, form):
+    #     profile = Profile.objects.get(user=self.request.user)
+    #     if form.instance.author == profile:
+    #         return super().form_valid(form)
+    #     else:
+    #         form.add_error(None, 'You can update only your own posts.')
+    #         return super().form_invalid(form)
+
+    def get(self, request, pk, *args, **kwargs):
+        form = PostForm()
+        profile = Profile.objects.get(user=request.user)
+
+        try:
+            post = Post.objects.get(pk=pk)
+        except:
+            return render(request, 'main/not_found.html')
+
+        if not profile == post.author:
+            messages.warning(request, 'You can only update your own posts.')
+
+        context = {
+            'form': form,
+            'post': post
+        }
+
+        return render(request, 'posts/update.html', context)
+
+    def post(self, request, pk, *args, **kwargs):
+        profile = Profile.objects.get(user=request.user)
+
+        try:
+            post = Post.objects.get(pk=pk)
+        except:
+            return render(request, 'main/not_found.html')
+
+        if not profile == post.author:
+            messages.warning(request, 'You can only update your own posts.')
+
+        form = PostForm(request.POST, request.FILES)
+
+        # Custom profanity words
+        custom_badwords = CustomProfanity.objects.values_list(
+            'bad_word', flat=True)
+        profanity.load_censor_words(custom_badwords)
+
+        valid = form.is_valid()
+
+        if profanity.contains_profanity(form.cleaned_data.get('content')):
+            custom_profanity_error = 'Please remove any profanity/swear words. (Added by an admin. Contact an admin if you believe this is wrong.)'
+            valid = False
+            form.errors['content'] = custom_profanity_error
+
+        if valid:
+            post.content = form.cleaned_data.get('content')
+            if form.cleaned_data.get('image'):
+                post.image = form.cleaned_data.get('image')
+            post.save()
+            return redirect(request.POST.get('referer'))
+
+        context = {
+            'form': form,
+            'post': post
+        }
+
+        return render(request, 'posts/update.html', context)
 
 
 def CommentDelete(request, pk):
