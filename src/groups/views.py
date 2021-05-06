@@ -100,10 +100,13 @@ class ViewGroup(View):
 
         if 'submit_post_form' in request.POST:
             post_form = PostForm(request.POST, request.FILES)
+            comment_form = None
             valid = post_form.is_valid()
 
             if profanity.contains_profanity(post_form.cleaned_data.get('content')):
+                custom_profanity_error = 'Please remove any profanity/swear words. (Added by an admin. Contact an admin if you believe this is wrong.)'
                 valid = False
+                post_form.errors['content'] = custom_profanity_error
 
             if valid:
                 post_instance = post_form.save(commit=False)
@@ -114,10 +117,13 @@ class ViewGroup(View):
 
         elif 'submit_comment_form' in request.POST:
             comment_form = CommentForm(request.POST)
+            post_form = None
             valid = comment_form.is_valid()
 
             if profanity.contains_profanity(comment_form.cleaned_data.get('body')):
+                custom_profanity_error = 'Please remove any profanity/swear words. (Added by an admin. Contact an admin if you believe this is wrong.)'
                 valid = False
+                comment_form.errors['body'] = custom_profanity_error
 
             if valid:
                 post_id = request.POST.get("post_id")
@@ -127,7 +133,17 @@ class ViewGroup(View):
                 comment_instance.save()
                 return redirect(request.headers.get('Referer'))
 
-        return redirect('groups:view-group', pk=pk)
+        group_posts = Post.objects.filter(group=group)
+
+        context = {
+            'profile': profile,
+            'group': group,
+            'posts': group_posts,
+            'post_form': post_form,
+            'comment_form': comment_form
+        }
+
+        return render(request, 'groups/view.html', context)
 
 
 class JoinGroup(View):

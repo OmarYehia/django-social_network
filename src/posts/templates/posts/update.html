@@ -3,6 +3,22 @@
 
 {% block content %}
     <div class="container">
+  
+    {% if messages %}
+        {% for message in messages %}
+            {% if 'warning' in message.tags %}
+                <div class="alert alert-danger error-field">
+                    {{ message }}
+                </div>      
+            {% endif %}
+            {{ message.tags }}
+            {% if 'success' in message.tags %}
+                <div class="alert alert-success error-field">
+                    {{ message }}
+                </div>      
+            {% endif %}
+        {% endfor %}
+    {% else %}  
         <h3>Update Post</h3>
         {% if form.non_field_errors %}
         <div class="alert alert-danger p-1 error-field">
@@ -12,9 +28,10 @@
         
             <form class="create-post-form border rounded p-3" action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
+                <input type='hidden' name="referer" value="{{ request.META.HTTP_REFERER }}" />
                 <div class="mb-3">
                     <label for="{{ form.content.id_for_label }}" class="form-label">Post Content:</label>
-                    <textarea class="form-control" name="content">{{ form.content.value }}</textarea>
+                    <textarea class="form-control" name="content">{{ post.content }}</textarea>
                     <div class="text-danger p-1 error-field">
                         {{ form.content.errors }}
                     </div>
@@ -23,7 +40,7 @@
                 <div class="mb-3">
                     
                     <label for="{{ form.image.id_for_label }}" class="form-label">Post image:</label>
-                    <input type="file" class="form-control" name="image" />
+                    <input type="file" class="form-control" name="image" value="post.image"/>
                     <div class="text-danger p-1 error-field">
                         {{ form.image.errors }}
                     </div>
@@ -33,4 +50,5 @@
         </div>
         
     </div>
+    {% endif %}
 {% endblock content %}
