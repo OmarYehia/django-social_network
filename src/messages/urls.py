@@ -1,12 +1,12 @@
 from django.urls import path
-from .views import ListThreads, CreateThread, ThreadView, CreateMessage
+from .views import list_threads, create_thread, thread_view, create_message
 
 
 app_name = 'messages'
 
 urlpatterns = [
-    path('', ListThreads.as_view(), name='inbox'),
-    path('create-thread/', CreateThread.as_view(), name='create-thread'),
-    path('<int:pk>/', ThreadView.as_view(), name='thread'),
-    path('<int:pk>/create-message/', CreateMessage.as_view(), name='create-message')
+    path('', list_threads, name='inbox'),
+    path('create-thread/', create_thread, name='create-thread'),
+    path('<int:pk>/', thread_view, name='thread'),
+    path('<int:pk>/create-message/', create_message, name='create-message')
 ]

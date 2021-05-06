@@ -7,6 +7,8 @@ from posts.models import Post
 from posts.forms import PostForm, CommentForm
 from posts.models import CustomProfanity
 from better_profanity import profanity
+from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 
@@ -40,6 +42,9 @@ class ListGroups(View):
             return render(request, 'groups/groups.html')
 
 
+list_groups = login_required(ListGroups.as_view(), login_url="/login")
+
+
 class CreateGroup(View):
     def get(self, request, *args, **kwargs):
         form = GroupForm()
@@ -63,6 +68,9 @@ class CreateGroup(View):
             return redirect('groups:view-group', pk=group_instance.pk)
 
         return render(request, 'groups/create.html', {'form': form})
+
+
+create_group = login_required(CreateGroup.as_view(), login_url="/login")
 
 
 class ViewGroup(View):
@@ -146,6 +154,9 @@ class ViewGroup(View):
         return render(request, 'groups/view.html', context)
 
 
+view_group = login_required(ViewGroup.as_view(), login_url="/login")
+
+
 class JoinGroup(View):
     def get(self, request, pk, *args, **kwargs):
         group = Group.objects.get(pk=pk)
@@ -165,6 +176,9 @@ class JoinGroup(View):
         group.users.add(user_profile)
 
         return redirect('groups:view-group', pk=pk)
+
+
+join_group = login_required(JoinGroup.as_view(), login_url="/login")
 
 
 class DeleteGroup(View):
@@ -191,6 +205,9 @@ class DeleteGroup(View):
         return redirect('groups:groups-index')
 
 
+delete_group = login_required(DeleteGroup.as_view(), login_url="/login")
+
+
 class ViewGroupMembers(View):
     def get(self, request, pk, *args, **kwargs):
         group = Group.objects.get(pk=pk)
@@ -204,6 +221,9 @@ class ViewGroupMembers(View):
         }
 
         return render(request, 'groups/view_members.html', context)
+
+
+view_group_members = login_required(ViewGroupMembers.as_view(), login_url="/login")
 
 
 class RemoveMember(View):
@@ -221,3 +241,6 @@ class RemoveMember(View):
             return redirect('groups:group-members', pk=group.pk)
         except:
             return redirect('groups:group-members', pk=group.pk)
+
+
+remove_member = login_required(RemoveMember.as_view(), login_url="/login")

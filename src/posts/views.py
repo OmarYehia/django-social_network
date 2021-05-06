@@ -8,9 +8,12 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponse
 from better_profanity import profanity
+from django.contrib.auth.decorators import login_required
+
+
 # Create your views here.
 
-
+@login_required(login_url="/login")
 def posts_index(request):
     user = request.user
     profile = Profile.objects.get(user=user)
@@ -69,7 +72,8 @@ def posts_index(request):
             comment_instance.post = Post.objects.get(id=post_id)
             comment_instance.save()
             notification = Notifications.objects.create(
-                notification_type=2, from_user=request.user, to_user=comment_instance.post.author.user, post=comment_instance.post)
+                notification_type=2, from_user=request.user, to_user=comment_instance.post.author.user,
+                post=comment_instance.post)
             return redirect(request.headers.get('Referer'))
 
     context = {
@@ -83,6 +87,7 @@ def posts_index(request):
     return render(request, 'posts/index.html', context)
 
 
+@login_required(login_url="/login")
 def like_unlike_post(request):
     user = request.user
 
@@ -139,6 +144,9 @@ class PostDeleteView(DeleteView):
             return redirect(request.POST.get('referer'))
         except:
             return render(request, 'main/not_found.html')
+
+
+post_delete_view = login_required(PostDeleteView.as_view(), login_url="/login")
 
 
 class PostUpdateView(UpdateView):
@@ -201,6 +209,10 @@ class PostUpdateView(UpdateView):
         return render(request, 'posts/update.html', context)
 
 
+post_update_view = login_required(PostUpdateView.as_view(), login_url="/login")
+
+
+@login_required(login_url="/login")
 def CommentDelete(request, pk):
     comment = Comment.objects.get(pk=pk)
     logged_user_profile = Profile.objects.get(user=request.user)
@@ -221,6 +233,9 @@ class PostNotifications(View):
         return redirect('posts:posts-index', pk=post_pk)
 
 
+post_notifications = login_required(PostNotifications.as_view(), login_url="/login")
+
+
 class FollowNotifications(View):
     def get(self, request, notification_pk, profile_pk, *args, **kwargs):
         notification = Notifications.objects.get(pk=notification_pk)
@@ -231,6 +246,9 @@ class FollowNotifications(View):
 
         return redirect('profile', pk=profile_pk)
         return redirect(request.headers.get('Referer'))
+
+
+follow_notifications = login_required(FollowNotifications.as_view(), login_url="/login")
 
 
 class ViewPost(View):
@@ -292,3 +310,6 @@ class ViewPost(View):
                 'form': form
             }
             return render(request, 'posts/view_post.html', context)
+
+
+view_post = login_required(ViewPost.as_view(), login_url="/login")

@@ -4,6 +4,9 @@ from django.views import View
 from .models import Thread, Message
 from profiles.models import Profile
 from .forms import ThreadForm, MessageForm
+from django.contrib.auth.decorators import login_required
+
+
 # Create your views here.
 
 
@@ -21,6 +24,9 @@ class ListThreads(View):
         }
 
         return render(request, 'messages/inbox.html', context)
+
+
+list_threads = login_required(ListThreads.as_view(), login_url="/login")
 
 
 class CreateThread(View):
@@ -71,6 +77,9 @@ class CreateThread(View):
             return redirect('messages:create-thread')
 
 
+create_thread = login_required(CreateThread.as_view(), login_url="/login")
+
+
 class ThreadView(View):
     def get(self, request, pk, *args, **kwargs):
         form = MessageForm()
@@ -86,6 +95,9 @@ class ThreadView(View):
         }
 
         return render(request, 'messages/thread.html', context)
+
+
+thread_view = login_required(ThreadView.as_view(), login_url="/login")
 
 
 class CreateMessage(View):
@@ -108,3 +120,6 @@ class CreateMessage(View):
         message.save()
 
         return redirect('messages:thread', pk=pk)
+
+
+create_message = login_required(CreateMessage.as_view(), login_url="/login")
