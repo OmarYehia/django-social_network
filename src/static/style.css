@@ -5,6 +5,7 @@
     font-size:13px;
      color:#333;
 }
+
 .updated-profile-form{
   font-weight: 200;
   line-height: 4;
@@ -66,8 +67,6 @@
     width: 33%;
 }
 
-<<<<<<< HEAD
-
 .notification-badge {
     transition: 0.3s;
 
@@ -126,5 +125,3 @@
     transition: 0.3s;
     cursor: pointer;
 }
-=======
->>>>>>> dc9502ab51d33bcc3818b2b02e412998781d7b31

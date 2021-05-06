@@ -3,7 +3,7 @@ from .models import Post, Like, Comment, Notifications, CustomProfanity
 from profiles.models import Profile
 from .forms import PostForm, CommentForm
 from django.db.models import Q
-from django.views.generic import DeleteView, UpdateView, View 
+from django.views.generic import DeleteView, UpdateView, View
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponse
@@ -68,7 +68,8 @@ def posts_index(request):
             comment_instance.user = profile
             comment_instance.post = Post.objects.get(id=post_id)
             comment_instance.save()
-            notification = Notifications.objects.create(notification_type=2, from_user=request.user, to_user=comment_instance.post.author.user, post=comment_instance.post)
+            notification = Notifications.objects.create(
+                notification_type=2, from_user=request.user, to_user=comment_instance.post.author.user, post=comment_instance.post)
             return redirect(request.headers.get('Referer'))
 
     context = {
@@ -108,8 +109,8 @@ def like_unlike_post(request):
 
         post.save()
         like.save()
-        notification = Notifications.objects.create(notification_type=1, from_user=request.user, to_user=post.author.user, post=post)
-
+        notification = Notifications.objects.create(
+            notification_type=1, from_user=request.user, to_user=post.author.user, post=post)
 
     return redirect(request.headers.get('Referer'))
 
@@ -210,25 +211,25 @@ def CommentDelete(request, pk):
 
 
 class PostNotifications(View):
-    def get(self,request,post_pk, *args, **kwargs):
+    def get(self, request, post_pk, *args, **kwargs):
         # notification = Notifications.objects.get(pk=notification_pk)
         post = Post.objects.get(pk=post_pk)
 
         notification.user_has_seen = True
         notification.save()
 
-        return redirect('posts:posts-index',pk=post_pk)
+        return redirect('posts:posts-index', pk=post_pk)
 
 
 class FollowNotifications(View):
-    def get(self,request,notification_pk,profile_pk, *args, **kwargs):
+    def get(self, request, notification_pk, profile_pk, *args, **kwargs):
         notification = Notifications.objects.get(pk=notification_pk)
         profile = Profile.objects.get(pk=profile_pk)
 
         notification.user_has_seen = True
         notification.save()
 
-        return redirect('profile',pk=profile_pk)
+        return redirect('profile', pk=profile_pk)
         return redirect(request.headers.get('Referer'))
 
 
@@ -279,11 +280,11 @@ class ViewPost(View):
             comment_instance.post = post
             comment_instance.save()
 
-            notification = Notifications.objects.create(notification_type=2, from_user=request.user, to_user=post.author.user, post=post)
+            notification = Notifications.objects.create(
+                notification_type=2, from_user=request.user, to_user=post.author.user, post=post)
 
             return redirect(request.headers.get('Referer'))
 
-        
         else:
             context = {
                 'post': post,
