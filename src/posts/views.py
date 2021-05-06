@@ -138,19 +138,6 @@ class PostDeleteView(DeleteView):
 
 
 class PostUpdateView(UpdateView):
-    # model = Post
-    # form_class = PostForm
-    # template_name = 'posts/update.html'
-    # success_url = reverse_lazy('posts:posts-index')
-
-    # def form_valid(self, form):
-    #     profile = Profile.objects.get(user=self.request.user)
-    #     if form.instance.author == profile:
-    #         return super().form_valid(form)
-    #     else:
-    #         form.add_error(None, 'You can update only your own posts.')
-    #         return super().form_invalid(form)
-
     def get(self, request, pk, *args, **kwargs):
         form = PostForm()
         profile = Profile.objects.get(user=request.user)
