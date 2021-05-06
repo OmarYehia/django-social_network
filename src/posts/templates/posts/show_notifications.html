@@ -1,17 +1,17 @@
 {% load static %}
 <div class="dropdown">
     <span class="badge bg-primary notifications-badge" onclick="showNotifications()">{{ notifications.count }}</span>
-    <div class="dropdown-content " id="notification-container">
+    <div class="dropdown-content d-none " id="notification-container">
         {% for notification in notifications %}
             {% if notification.post %}
                 {% if notification.notification_type == 1 %}
                     <div class="dropdown-item-parent">
-                        <a href="{% url 'posts:post-notification' notification.pk notification.post.pk %}">@{{notification.from_user}} liked your post</a>
+                        <a href="{% url 'posts:view-post' notification.post.pk %}">@{{notification.from_user}} liked your post</a>
                         <span class="dropdown-item-close">&times;</span>
                     </div>
                     {% elif notification.notification_type == 2 %}
                     <div class="dropdown-item-parent">
-                        <a href="{% url 'posts:post-notification' notification.pk notification.post.pk %}">@{{notification.from_user}} commented your post</a>
+                        <a href="{% url 'posts:view-post' notification.post.pk %}">@{{notification.from_user}} commented your post</a>
                         <span class="dropdown-item-close">&times;</span>
                     </div>
                 {% endif %}
